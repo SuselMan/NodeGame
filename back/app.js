@@ -13,14 +13,24 @@ app.use(express.static(__dirname + '/public'));
 app.listen(8080);
 
 var socketsArr=[];
+var idArr=[];
 
 io.on('connection', function(socket){
     console.log('a user connected');
     socketsArr.push(socket);
-    var ID = (socket.id).toString().substr(0, 5);
+    var ID=socket.id;
+    idArr.push(ID);
+
     for(var i=0;i<socketsArr.length;i++){
-        socketsArr[i].json.send({'event': 'connected', 'name': socketsArr.length + ' '});
+        socketsArr[i].json.send({'event': 'connected', 'name': idArr,'id':ID});
     }
+    io.on('alive', function (name, fn) {
+
+    });
+});
+
+io.on('disconnect', function (socket) {
+    io.emit('user disconnected');
 });
 
 
