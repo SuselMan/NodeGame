@@ -1,1 +1,1 @@
-# h1 Node.js + SPA test
+# Node.js + SPA test
