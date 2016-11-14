@@ -1,54 +1,43 @@
-/**
- * Created by pavluhin on 10.11.2016.
- */
-webpack = require('webpack');
-path = require('path');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
+ var path = require('path')
+ var webpack = require('webpack')
+// var NpmInstallPlugin = require('npm-install-webpack-plugin')
+// var autoprefixer = require('autoprefixer');
+// var precss = require('precss');
 
-
-webpackConfig = {
-    context: __dirname,
-    entry: {
-        bundle: './static/app.js',
-        styles: './static/main.scss'
-    },
+module.exports = {
+    devtool: 'cheap-module-eval-source-map',
+    entry: [
+        './front/app'
+    ],
     output: {
-        filename: '[name].js',
-        path: './static/build',
-        library: '[name]'
+        path: path.join(__dirname, 'back/public'),
+        filename: 'app.js'
     },
-    resolve: {
-        extensions: ['', '.js', '.jsx']
-    },
-    devtool: '#cheap-module-source-map',
     module: {
         loaders: [
             {
-                test: /\.jsx?$/,
-                exclude: [/node_modules/],
-                loader: "babel-loader",
-                query: {
-                    presets: ['es2015', 'react', 'stage-0', 'stage-1']
+                test   : /\.js$/,
+                exclude: /node_modules/,
+                loader : 'babel',
+                query  : {
+                    presets: [ 'es2015' ]
                 }
             },
             {
-                test: /\.scss$/,
-                loader: ExtractTextPlugin.extract('style-loader', 'css-loader!resolve-url!sass-loader?sourceMap')
+                test   : /\.css$/,
+                exclude: /node_modules/,
+                loader : 'style!css'
             },
             {
-                test: /\.css$/,
-                loader: ExtractTextPlugin.extract('style-loader', 'css-loader')
+                test   : /\.scss$/,
+                exclude: /node_modules/,
+                loader : 'style!css!sass'
             },
             {
-                test: /\.woff2?$|\.ttf$|\.eot$|\.svg$|\.png|\.jpe?g|\.gif$/,
-                loader: 'file-loader'
+                test   : /\.(jpg|png|gif)$/,
+                include: /images/,
+                loader : 'url'
             }
         ]
-    },
-    plugins: [
-        new ExtractTextPlugin('styles.css', {
-            allChunks: true
-        })
-    ]
-};
-module.exports = webpackConfig;
+    }
+}
