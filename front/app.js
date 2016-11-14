@@ -4,12 +4,14 @@
 
 import './sass/main.scss';
 import {con} from './js/itest';
-import 'babel-polyfill'
-import React, { Component, PropTypes } from 'react'
-import { render } from 'react-dom'
+import 'babel-polyfill';
+import React, { Component, PropTypes } from 'react';
+import { Provider } from 'react-redux';
+import configureStore from './js/store/store';
+import ReactDOM from 'react-dom';
 
 
-
+const store = configureStore()
 var ID;
 
 
@@ -19,7 +21,10 @@ class App extends Component {
     }
 }
 
-React.render(<App />,
+ReactDOM.render(
+    <Provider store={store}>
+        <App />
+    </Provider>,
     document.getElementById('root')
 )
 
