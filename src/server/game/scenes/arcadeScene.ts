@@ -38,7 +38,7 @@ export default class MainScene extends Phaser.Scene {
 
   init() {
     try {
-      //@ts-ignore
+      // @ts-ignore
       const { level = 0, roomId, roomManager } = this.game.config.preBoot()
       this.level = level
       this.roomManager = roomManager
@@ -83,7 +83,7 @@ export default class MainScene extends Phaser.Scene {
         .setOrigin(0)
         .setAlpha(0.6)
       // mock socket
-      this.debug.socket = { emit: () => {} }
+      this.debug.socket = { emit: () => { console.info('emit') } }
       this.debug.cursors = new Cursors(this, this.debug.socket)
       this.debug.dude = new Dude(this, this.newId(), { clientId: 55555, socketId: 'some-socket-id' })
       this.dudeGroup.add(this.debug.dude)
@@ -107,15 +107,15 @@ export default class MainScene extends Phaser.Scene {
 
     this.events.addListener('U' /* short for updateDude */, (res: any) => {
       // @ts-ignore
-      let dudes: Dude[] = this.dudeGroup.children.getArray().filter((dude: Dude) => {
+      const dudes: Dude[] = this.dudeGroup.children.getArray().filter((dude: Dude) => {
         return dude.clientId && dude.clientId === res.clientId
       })
       if (dudes[0]) {
-        let b = res.updates
+        const b = res.updates
         console.log('down', b >= 25 ? true : false, b)
-        let updates = {
+        const updates = {
           left: b === 1 || b === 5 || b === 26 ? true : false,
-          right: b === 2 || b === 6 ||b === 27 ? true : false,
+          right: b === 2 || b === 6 || b === 27 ? true : false,
           up: b === 4 || b === 6 || b === 5 || b === 29 ? true : false,
           down: b >= 25 ? true : false,
           none: b === 8 ? true : false
@@ -150,8 +150,8 @@ export default class MainScene extends Phaser.Scene {
       if (dude.dead) return
       dude.kill()
 
-      let nextLevel = this.level + 1 >= this.map.countTotalLevels() ? 0 : this.level + 1
-      let socket = this.roomManager.ioNspGame.sockets[dude.socketId] as any
+      const nextLevel = this.level + 1 >= this.map.countTotalLevels() ? 0 : this.level + 1
+      const socket = this.roomManager.ioNspGame.sockets[dude.socketId] as any
 
       this.roomManager.changeRoom(socket, 'ArcadeScene', nextLevel)
     })
@@ -159,7 +159,7 @@ export default class MainScene extends Phaser.Scene {
 
   /** Sends the initial state to the client */
   getInitialState() {
-    let objects: any[] = []
+    const objects: any[] = []
 
     SyncManager.prepareFromPhaserGroup(this.boxGroup, objects)
     SyncManager.prepareFromPhaserGroup(this.dudeGroup, objects)
@@ -174,16 +174,16 @@ export default class MainScene extends Phaser.Scene {
 
     // @ts-ignore
     this.mummyGroup.children.iterate((mummy: Mummy) => {
-      let coordinates = mummy.getLookAhead()
-      let tile = this.map.getTileByCoordinates(coordinates)
+      const coordinates = mummy.getLookAhead()
+      const tile = this.map.getTileByCoordinates(coordinates)
       mummy.changeDirection(tile)
       mummy.update()
     })
 
     if (PHYSICS_DEBUG) {
       this.debug.cursors.update()
-      let cursorsDown = this.debug.cursors.cursorsDown()
-      let dude: Dude = this.debug.dude
+      const cursorsDown = this.debug.cursors.cursorsDown()
+      const dude: Dude = this.debug.dude
       dude.setUpdates(cursorsDown)
       dude.update()
       this.cameras.main.setScroll(
@@ -195,12 +195,12 @@ export default class MainScene extends Phaser.Scene {
     if (PHYSICS_DEBUG) return
 
     const prepareObjectToSync = (obj: any) => {
-      let cleanObjectToSync = SyncManager.cleanObjectToSync(obj)
+      const cleanObjectToSync = SyncManager.cleanObjectToSync(obj)
       this.objectsToSync = SyncManager.mergeObjectToSync(cleanObjectToSync, this.objectsToSync)
     }
 
     if (this.star && this.star.sync) {
-      let starObj = {
+      const starObj = {
         skin: this.star.skin,
         tint: this.star.tint,
         id: this.star.id,
@@ -213,7 +213,7 @@ export default class MainScene extends Phaser.Scene {
 
     // @ts-ignore
     this.mummyGroup.children.iterate((child: Mummy) => {
-      let object = {
+      const object = {
         skin: child.skin,
         direction: child.direction,
         id: child.id,
@@ -226,7 +226,7 @@ export default class MainScene extends Phaser.Scene {
     // @ts-ignore
     this.boxGroup.children.iterate((child: Box) => {
       if (child.sync) {
-        let object = {
+        const object = {
           skin: child.skin,
           id: child.id,
           x: child.body.position.x + child.body.width / 2,
@@ -240,12 +240,12 @@ export default class MainScene extends Phaser.Scene {
     this.dudeGroup.children.iterate((child: Dude) => {
       child.update()
       // we only update the dude if one if the 4 properties below have changed
-      let x = child.prevPosition.x.toFixed(0) !== child.body.position.x.toFixed(0)
-      let y = child.prevPosition.y.toFixed(0) !== child.body.position.y.toFixed(0)
-      let dead = child.prevDead !== child.dead
-      let color = child.prevColor.toString() !== child.color.toString()
+      const x = child.prevPosition.x.toFixed(0) !== child.body.position.x.toFixed(0)
+      const y = child.prevPosition.y.toFixed(0) !== child.body.position.y.toFixed(0)
+      const dead = child.prevDead !== child.dead
+      const color = child.prevColor.toString() !== child.color.toString()
       if (x || y || dead || color) {
-        let object = {
+        const object = {
           animation: child.animation,
           dead: child.dead,
           clientId: child.clientId,
@@ -260,7 +260,7 @@ export default class MainScene extends Phaser.Scene {
       child.postUpdate()
     })
 
-    let send: any[] = []
+    const send: any[] = []
 
     Object.keys(this.objectsToSync).forEach(key => {
       // we only sync the mummies on every 3th frame

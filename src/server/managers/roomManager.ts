@@ -15,7 +15,7 @@ interface Room {
   // I am not sure if it is safe to publish the roomId to the client
   // so we only create a second id
   // - If you know if it is safe or not, please tell me :) -
-  //publicRoomId: string
+  // publicRoomId: string
   game: Phaser.Game
   scene: GameScene
   removing: boolean
@@ -30,7 +30,7 @@ import Game, { PhaserGame } from '../game/game'
 import { Math as phaserMath } from 'phaser'
 import { MAX_PLAYERS_PER_ROOM, USER_KICK_TIMEOUT } from '../../constants'
 
-let randomDataGenerator = new phaserMath.RandomDataGenerator()
+const randomDataGenerator = new phaserMath.RandomDataGenerator()
 
 import uuidv4 from 'uuid/v4'
 import Stats from '../socket/ioStats'
@@ -46,7 +46,7 @@ export default class RoomManager {
   }
 
   generateClientId(socket: Socket) {
-    let clientId = randomDataGenerator.integerInRange(100000, 100000000)
+    const clientId = randomDataGenerator.integerInRange(100000, 100000000)
     socket.clientId = clientId
     socket.emit('clientId', clientId)
   }
@@ -57,7 +57,7 @@ export default class RoomManager {
       console.error('level or scene is not defined in ioGame.ts')
       return
     }
-    socket.room = this.chooseRoom({ scene: scene, level: +level })
+    socket.room = this.chooseRoom({ scene, level: +level })
 
     // create a new game instance if this room does not exist yet
     if (!this.rooms[socket.room]) {
@@ -81,11 +81,11 @@ export default class RoomManager {
   async changeRoom(socket: Socket, scene: string, level: number) {
     this.leaveRoom(socket)
     await this.joinRoom(socket, scene, +level)
-    socket.emit('changingRoom', { scene: scene, level: +level })
+    socket.emit('changingRoom', { scene, level: +level })
   }
 
   addUser(socket: Socket) {
-    let newUsers: Users = {
+    const newUsers: Users = {
       [socket.id]: {
         roomId: socket.room,
         lastUpdate: Date.now(),
@@ -134,16 +134,16 @@ export default class RoomManager {
   createRoom = async (roomId: string, scene: string, level: number) => {
     this.stats.log(`Create new room <b>${roomId}</b>`)
 
-    let game: PhaserGame = await Game(this, roomId, { scene, level })
+    const game: PhaserGame = await Game(this, roomId, { scene, level })
 
     this.rooms[roomId] = {
       sceneKey: scene,
       level: +level,
-      roomId: roomId,
+      roomId,
       users: {},
-      game: game,
+      game,
       // @ts-ignore
-      scene: game.scene.keys['MainScene'],
+      scene: game.scene.keys.MainScene,
       removing: false
     }
 
@@ -170,15 +170,15 @@ export default class RoomManager {
   chooseRoom = (props: { scene: string; level: number }): string => {
     const { scene, level } = props
 
-    let rooms = Object.keys(this.rooms)
+    const rooms = Object.keys(this.rooms)
 
     if (rooms.length === 0) return uuidv4()
 
     // check for the next room with 1 or more free spaces
     let chosenRoom = null
     for (let i = 0; i < Object.keys(this.rooms).length; i++) {
-      let room = this.rooms[rooms[i]]
-      let count = Object.keys(room.users).length
+      const room = this.rooms[rooms[i]]
+      const count = Object.keys(room.users).length
       if (
         count < MAX_PLAYERS_PER_ROOM &&
         room.sceneKey === scene &&
@@ -196,7 +196,7 @@ export default class RoomManager {
   }
 
   getRoomsArray() {
-    let rooms: Room[] = []
+    const rooms: Room[] = []
     Object.keys(this.rooms).forEach(roomId => {
       rooms.push(this.rooms[roomId])
     })
@@ -205,7 +205,7 @@ export default class RoomManager {
 
   /** Returns an Array of all users in a specific room */
   getRoomUsersArray(roomId: string) {
-    let users: User[] = []
+    const users: User[] = []
 
     if (!this.roomExists(roomId)) return users
 
@@ -217,7 +217,7 @@ export default class RoomManager {
 
   /** Returns an Array of all users in all rooms */
   getAllUsersArray() {
-    let users: User[] = []
+    const users: User[] = []
     Object.keys(this.rooms).forEach(roomId => {
       Object.keys(this.rooms[roomId].users).forEach(userId => {
         users.push(this.rooms[roomId].users[userId])
@@ -243,8 +243,8 @@ export default class RoomManager {
   removeInactiveUsers() {
     this.getAllUsersArray().forEach((user: User) => {
       if (Date.now() - user.lastUpdate > USER_KICK_TIMEOUT) {
-        let removed = this.removeUser(user.roomId, user.id, false)
-        let disconnected = this.disconnectUser(user.id)
+        const removed = this.removeUser(user.roomId, user.id, false)
+        const disconnected = this.disconnectUser(user.id)
         if (removed && disconnected) {
           this.stats.log(`Kick user <b>${user.clientId}</b> from room <b>${user.roomId}</b>`)
         }

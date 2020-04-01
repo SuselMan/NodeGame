@@ -1,3 +1,5 @@
+import Control from './control'
+
 export default class Controls {
   left = false
   right = false
@@ -36,10 +38,10 @@ export default class Controls {
       detectPointer(gameObject, false)
     )
 
-    let left = new Control(scene, 0, 0, 'left').setRotation(-0.5 * Math.PI)
-    let right = new Control(scene, 0, 0, 'right').setRotation(0.5 * Math.PI)
-    let up = new Control(scene, 0, 0, 'up')
-    let down = new Control(scene, 0, 0, 'down')
+    const left = new Control(scene, 0, 0, 'left').setRotation(-0.5 * Math.PI)
+    const right = new Control(scene, 0, 0, 'right').setRotation(0.5 * Math.PI)
+    const up = new Control(scene, 0, 0, 'up')
+    const down = new Control(scene, 0, 0, 'down')
     this.controls.push(left, right, up, down)
     this.resize()
 
@@ -55,7 +57,7 @@ export default class Controls {
     const controlsRadius = (192 / 2) * SCALE
     const w = this.scene.cameras.main.width - 10 - controlsRadius
     const h = this.scene.cameras.main.height - 10 - controlsRadius
-    let positions = [
+    const positions = [
       {
         x: controlsRadius + 10,
         y: h
@@ -86,19 +88,5 @@ export default class Controls {
     }
 
     this.prevNone = this.none
-  }
-}
-
-class Control extends Phaser.GameObjects.Image {
-  constructor(scene: Phaser.Scene, x: number, y: number, public btn: string) {
-    super(scene, x, y, 'controls')
-    scene.add.existing(this)
-
-    this.setInteractive()
-      .setScrollFactor(0)
-      .setAlpha(0.5)
-      .setDepth(2)
-
-    if (!scene.sys.game.device.input.touch) this.setAlpha(0)
   }
 }

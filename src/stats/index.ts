@@ -2,10 +2,10 @@ import io from 'socket.io-client'
 import axios from 'axios'
 import moment from 'moment'
 
-let url = `${location.origin}/S` /* short for stats */
-let stats = io.connect(url, { transports: ['websocket'] })
+const url = `${location.origin}/S` /* short for stats */
+const stats = io.connect(url, { transports: ['websocket'] })
 
-let statsUl = document.getElementById('logs-ul')
+const statsUl = document.getElementById('logs-ul')
 
 // on reconnection, reset the transports option, as the Websocket
 // connection may have failed (caused by proxy, firewall, browser, ...)
@@ -19,20 +19,20 @@ stats.on('connect', () => {
 
 stats.on('getLog', (res: { date: Date; log: string }) => {
   if (statsUl) {
-    let li = document.createElement('li')
+    const li = document.createElement('li')
     li.innerHTML = `${moment(res.date).format('h:mm:ss a')}: ${res.log}`
     statsUl.appendChild(li)
   }
 })
 
 const setInnerHTML = (id: string, text: string | number) => {
-  let el = document.getElementById(id)
+  const el = document.getElementById(id)
   if (el) el.innerHTML = text.toString()
 }
 
 const getNewServerStats = async () => {
   try {
-    let res = await axios.get('/stats/get')
+    const res = await axios.get('/stats/get')
     if (!res || !res.data) throw new Error()
 
     const { payload } = res.data

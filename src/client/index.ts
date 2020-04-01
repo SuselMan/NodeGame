@@ -4,7 +4,7 @@ import Game from './game'
 import FullScreenEvent from './components/fullscreenEvent'
 
 window.addEventListener('load', () => {
-  let game = new Game()
+  const game = new Game()
 
   window.addEventListener('resize', () => {
     resize(game)

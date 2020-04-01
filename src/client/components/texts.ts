@@ -1,4 +1,4 @@
-import { MAX_PLAYERS_PER_ROOM } from "../../constants"
+import { MAX_PLAYERS_PER_ROOM } from '../../constants'
 
 const texts = [
   {
@@ -35,7 +35,7 @@ export default class Texts {
 
   constructor(public scene: Phaser.Scene) {
     texts.forEach(text => {
-      let theText = scene.add
+      const theText = scene.add
         .text(scene.cameras.main.width / 2, text.y, '', {
           color: '#ffffff',
           fontSize: text.fontSize
@@ -73,7 +73,9 @@ export default class Texts {
   toggleHidden() {
     this.hidden = !this.hidden
     for (const key in this.textObjects) {
-      this.textObjects[key].setAlpha(this.hidden ? 0 : 1)
+      if (this.textObjects.hasOwnProperty(key)) {
+        this.textObjects[key].setAlpha(this.hidden ? 0 : 1)
+      }
     }
   }
 
@@ -86,19 +88,19 @@ export default class Texts {
   }
 
   setConnectCounter(connectCounter: number) {
-    this.textObjects['show_connected_users'].setText(`Connected users: ${connectCounter}/${MAX_PLAYERS_PER_ROOM}`)
+    this.textObjects.show_connected_users.setText(`Connected users: ${connectCounter}/${MAX_PLAYERS_PER_ROOM}`)
   }
 
   setRoomId(roomId: string) {
-    this.textObjects['the_room_id'].setText(`RoomId ${roomId}`)
+    this.textObjects.the_room_id.setText(`RoomId ${roomId}`)
   }
 
   setTime(time: number) {
-    this.textObjects['server_running_time'].setText(`Server is running since ${new Date(time).toUTCString()}`)
+    this.textObjects.server_running_time.setText(`Server is running since ${new Date(time).toUTCString()}`)
   }
 
   setFps(fps: number) {
-    this.textObjects['show_fps'].setText(`fps: ${Math.round(fps)}`)
+    this.textObjects.show_fps.setText(`fps: ${Math.round(fps)}`)
   }
 
   setLatency(latency: Latency) {
@@ -106,10 +108,10 @@ export default class Texts {
     if (isNaN(latency.high) || latency.current > latency.high) latency.high = latency.current
     if (isNaN(latency.low) || latency.current < latency.low) latency.low = latency.current
 
-    let sum = latency.history.reduce((previous, current) => (current += previous))
-    let avg = sum / latency.history.length
+    const sum = latency.history.reduce((previous, current) => (current += previous))
+    const avg = sum / latency.history.length
 
-    this.textObjects['show_latency'].setText(
+    this.textObjects.show_latency.setText(
       `Latency ${latency.current}ms (avg ${Math.round(avg)}ms / low ${latency.low}ms / high ${latency.high}ms)`
     )
   }

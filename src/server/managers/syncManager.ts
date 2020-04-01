@@ -1,7 +1,6 @@
 
 /** Helps preparing the object to sync with the client */
 export default class SyncManager {
-  constructor() {}
 
   static prepareFromPhaserGroup(group: Phaser.GameObjects.Group, objects: any) {
     group.children.iterate((sprite: any) => {
@@ -10,7 +9,7 @@ export default class SyncManager {
   }
 
   static prepareFromPhaserSprite(sprite: any, objects: any) {
-    let obj = {
+    const obj = {
       ...sprite,
       ...this.getXY(sprite)
     }
@@ -72,11 +71,11 @@ export default class SyncManager {
 
   static decode(data: any) {
     const keys = SyncManager.keys
-    let decodedArray: any[] = []
+    const decodedArray: any[] = []
 
     let obj: any = {}
     data.split(',').forEach((value: string, index: number) => {
-      let key = keys[index % keys.length]
+      const key = keys[index % keys.length]
 
       // id (radix 36)
       if (key === 'id') {
@@ -84,7 +83,7 @@ export default class SyncManager {
       }
       // numbers
       else if (['skin', 'scale'].includes(key)) {
-        obj[key] = value !== '' ? parseInt(value) : null
+        obj[key] = value !== '' ? parseInt(value, 10) : null
       }
       // numbers (radix 36)
       else if (['x', 'y', 'angle', 'clientId'].includes(key)) {

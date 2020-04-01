@@ -7,7 +7,7 @@ export default class IoStats {
   /** This function will console.log and send it to the ioStats */
   log(log: string, logInNode = false) {
     if (logInNode) console.log('LOG: ' + log)
-    this.ioNspStats.emit('getLog', { date: new Date(), log: log })
+    this.ioNspStats.emit('getLog', { date: new Date(), log })
   }
 
   /** Get the total of objects in the game */
@@ -20,7 +20,7 @@ export default class IoStats {
   }
 
   setTotalObjects(roomId: string, count: number) {
-    this.totalObjects = { ...this.totalObjects, [roomId]: { count: count } }
+    this.totalObjects = { ...this.totalObjects, [roomId]: { count } }
   }
 
   removeTotalObjects(roomId: string) {

@@ -43,7 +43,7 @@ export default class Routes {
           <h1>Phaser 3: Real-Time Multiplayer Game with Physics</h1>
           <a href="/play">Play the Game</a>
           <a href="/physics">Debug the Physics</a>
-          <a href="/stats">View Server Stats</a>          
+          <a href="/stats">View Server Stats</a>
         </body>`)
     })
 
@@ -86,15 +86,15 @@ export default class Routes {
 
     this.router.get('/stats/get', (req, res) => {
       pidusage(process.pid, (err, stats) => {
-        if (err) return res.status(500).json({ err: err })
+        if (err) return res.status(500).json({ err })
 
-        let objects = ioStats.getTotalObjects()
+        const objects = ioStats.getTotalObjects()
 
-        let payload = {
+        const payload = {
           ...stats,
           users: roomManager.getAllUsersArray().length,
           rooms: roomManager.getRoomsArray().length,
-          objects: objects,
+          objects,
           time: this.time
         }
         res.json({ payload })

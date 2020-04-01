@@ -48,7 +48,7 @@ export default class Map {
   }
 
   getTileByCoordinates(coordinates: { x: number; y: number }) {
-    let { x: x1, y: y1 } = coordinates
+    const { x: x1, y: y1 } = coordinates
 
     let tile = { tile: '', x: -1, y: -1 }
 

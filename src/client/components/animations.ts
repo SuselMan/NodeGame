@@ -38,6 +38,6 @@ export const createMummyAnimation = (scene: Phaser.Scene) => {
 
 export const setMummyAnimation = (sprite: Phaser.GameObjects.Sprite, direction: string) => {
   if (!sprite.anims.isPlaying) sprite.anims.play('walk')
-  let flipX = direction === 'left' ? true : false
+  const flipX = direction === 'left' ? true : false
   sprite.setFlipX(flipX)
 }

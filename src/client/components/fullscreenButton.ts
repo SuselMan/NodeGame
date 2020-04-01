@@ -1,5 +1,5 @@
 const fullscreenButton = (scene: Phaser.Scene) => {
-  let button = scene.add
+  const button = scene.add
     .image(0, 0, 'fullscreen', 0)
     .setOrigin(1, 0)
     .setInteractive()

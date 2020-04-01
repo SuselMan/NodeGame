@@ -9,25 +9,25 @@ const DEFAULT_WIDTH: number = 896
 const DEFAULT_HEIGHT: number = 504
 const MAX_WIDTH: number = DEFAULT_WIDTH * 1.5
 const MAX_HEIGHT: number = DEFAULT_HEIGHT * 1.5
-let SCALE_MODE: scaleMode = 'SMOOTH' // FIT OR SMOOTH
+const SCALE_MODE: scaleMode = 'SMOOTH' // FIT OR SMOOTH
 
 const resize = (game: Phaser.Game) => {
   const w = window.innerWidth
   const h = window.innerHeight
 
-  let width = DEFAULT_WIDTH
-  let height = DEFAULT_HEIGHT
-  let maxWidth = MAX_WIDTH
-  let maxHeight = MAX_HEIGHT
-  let scaleMode = SCALE_MODE
+  const width = DEFAULT_WIDTH
+  const height = DEFAULT_HEIGHT
+  const maxWidth = MAX_WIDTH
+  const maxHeight = MAX_HEIGHT
+  const scaleMode = SCALE_MODE
 
-  let scale = Math.min(w / width, h / height)
-  let newWidth = Math.min(w / scale, maxWidth)
-  let newHeight = Math.min(h / scale, maxHeight)
+  const scale = Math.min(w / width, h / height)
+  const newWidth = Math.min(w / scale, maxWidth)
+  const newHeight = Math.min(h / scale, maxHeight)
 
-  let defaultRatio = DEFAULT_WIDTH / DEFAULT_HEIGHT
-  let maxRatioWidth = MAX_WIDTH / DEFAULT_HEIGHT
-  let maxRatioHeight = DEFAULT_WIDTH / MAX_HEIGHT
+  const defaultRatio = DEFAULT_WIDTH / DEFAULT_HEIGHT
+  const maxRatioWidth = MAX_WIDTH / DEFAULT_HEIGHT
+  const maxRatioHeight = DEFAULT_WIDTH / MAX_HEIGHT
 
   // smooth scaling
   let smooth = 1

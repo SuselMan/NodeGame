@@ -18,7 +18,7 @@ export default class MenuScene extends Phaser.Scene {
       fontSize: 52
     }
 
-    let texts: any[] = []
+    const texts: any[] = []
 
     texts.push(this.add.text(0, 0, 'Choose which Level\nyou want to play', styles).setOrigin(0.5, 0))
 
@@ -56,7 +56,7 @@ export default class MenuScene extends Phaser.Scene {
 
     const resize = () => {
       const { centerX, centerY } = this.cameras.main
-      let posY = [20, centerY - 100, centerY - 10, centerY + 60, centerY + 130]
+      const posY = [20, centerY - 100, centerY - 10, centerY + 60, centerY + 130]
       texts.forEach((text, i) => {
         text.setPosition(centerX, posY[i])
       })

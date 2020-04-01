@@ -49,7 +49,7 @@ export default class MainScene extends Phaser.Scene {
   create() {
     const socket = this.socket
 
-    let levelText = this.add
+    const levelText = this.add
       .text(0, 0, `Level ${this.level + 1}`, {
         color: '#ffffff',
         fontSize: 42
@@ -58,11 +58,11 @@ export default class MainScene extends Phaser.Scene {
       .setDepth(100)
       .setScrollFactor(0)
 
-    let starfield = this.add.tileSprite(world.x, world.y, world.width, world.height, 'starfield').setOrigin(0)
+    const starfield = this.add.tileSprite(world.x, world.y, world.width, world.height, 'starfield').setOrigin(0)
     this.cursors = new Cursors(this, socket)
     this.controls = new Controls(this, socket)
-    let texts = new Texts(this)
-    let fullscreenBtn = fullscreenButton(this)
+    const texts = new Texts(this)
+    const fullscreenBtn = fullscreenButton(this)
 
     this.cameras.main.setBounds(world.x, world.y, world.width, world.height)
 
@@ -95,7 +95,7 @@ export default class MainScene extends Phaser.Scene {
         delete this.objects[key]
       })
       socket.emit('getInitialState')
-      this.level = data.level | 0
+      this.level = data.level || 0
       levelText.setText(`Level ${this.level + 1}`)
     })
 
@@ -117,19 +117,19 @@ export default class MainScene extends Phaser.Scene {
 
           // if the object does not exist, create a new one
           if (!this.objects[obj.id]) {
-            let sprite = this.add
+            const sprite = this.add
               .sprite(obj.x, obj.y, obj.skin.toString())
               .setOrigin(0.5)
               .setRotation(obj.angle || 0)
 
             // add the sprite by id to the objects object
             this.objects[obj.id] = {
-              sprite: sprite
+              sprite
             }
           }
 
           // set some properties to the sprite
-          let sprite = this.objects[obj.id].sprite
+          const sprite = this.objects[obj.id].sprite
           // set scale
           if (obj.scale) {
             sprite.setScale(obj.scale)
@@ -188,7 +188,7 @@ export default class MainScene extends Phaser.Scene {
     if (this.sync.objects.length > 0) {
       this.sync.objects.forEach(obj => {
         if (this.objects[obj.id]) {
-          let sprite = this.objects[obj.id].sprite
+          const sprite = this.objects[obj.id].sprite
           if (obj.dead !== null) sprite.setVisible(!obj.dead)
           if (obj.x !== null) sprite.x = obj.x
           if (obj.y !== null) sprite.y = obj.y

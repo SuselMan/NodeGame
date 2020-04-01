@@ -1,4 +1,4 @@
-import { SKINS } from "../../../constants";
+import { SKINS } from '../../../constants'
 
 export default class Mummy extends Phaser.Physics.Arcade.Sprite {
   skin = SKINS.MUMMY
@@ -31,8 +31,8 @@ export default class Mummy extends Phaser.Physics.Arcade.Sprite {
   }
 
   getLookAhead() {
-    let x = this.direction === 'right' ? this.body.right + 5 : this.body.left - 5
-    let y = this.body.bottom + 10
+    const x = this.direction === 'right' ? this.body.right + 5 : this.body.left - 5
+    const y = this.body.bottom + 10
     return { x, y }
   }
 

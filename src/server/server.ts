@@ -4,9 +4,10 @@ import express from 'express'
 import helmet from 'helmet'
 import compression from 'compression'
 import path from 'path'
+import { Server } from 'http'
 
 const app = express()
-const server = require('http').Server(app)
+const server = new Server(app)
 import SocketIOStatic from 'socket.io'
 const io = SocketIOStatic(server)
 

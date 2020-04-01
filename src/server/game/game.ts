@@ -11,7 +11,7 @@ export class PhaserGame extends Phaser.Game {
 }
 
 const Game = (roomManager: RoomManager, roomId: string, options: { scene: string; level: number }) => {
-  let config = { ...commonConfig }
+  const config = { ...commonConfig }
 
   if (options.scene === 'ArcadeScene') {
     config.scene = [ArcadeScene]
