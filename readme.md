@@ -1,4 +1,4 @@
-# Towers and Castles
+# Node Game
 
 ------------
 
