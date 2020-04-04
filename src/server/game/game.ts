@@ -19,7 +19,7 @@ const Game = (roomManager: RoomManager, roomId: string, options: { scene: string
   }
 
   // @ts-ignore
-  config.customEnvironment = true
+  // config.customEnvironment = true
 
   // a very hackie trick to pass some custom data
   // but it work well :)

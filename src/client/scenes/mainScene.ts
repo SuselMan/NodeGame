@@ -1,8 +1,7 @@
 import Texts from '../components/texts'
 import Cursors from '../components/cursors'
-import { setDudeAnimation, setMummyAnimation } from '../components/animations'
+import { setDudeAnimation } from '../components/animations'
 import fullscreenButton from '../components/fullscreenButton'
-import Controls from '../components/controls'
 import { world } from '../config'
 import Resize from '../components/resize'
 
@@ -19,20 +18,9 @@ export default class MainScene extends Phaser.Scene {
     initialState: false,
     objects: []
   }
-
-  latency: Latency = {
-    current: NaN,
-    high: NaN,
-    low: NaN,
-    ping: NaN,
-    id: '',
-    canSend: true,
-    history: []
-  }
   socket: Socket
 
   cursors: Cursors | undefined
-  controls: Controls | undefined
   level: number = 0
 
   constructor() {
@@ -48,7 +36,6 @@ export default class MainScene extends Phaser.Scene {
 
   create() {
     const socket = this.socket
-
     const levelText = this.add
       .text(0, 0, `Level ${this.level + 1}`, {
         color: '#ffffff',
@@ -58,34 +45,18 @@ export default class MainScene extends Phaser.Scene {
       .setDepth(100)
       .setScrollFactor(0)
 
-    const starfield = this.add.tileSprite(world.x, world.y, world.width, world.height, 'starfield').setOrigin(0)
+
+
+   // const starfield = this.add.tileSprite(world.x, world.y, world.width, world.height, 'starfield').setOrigin(0)
     this.cursors = new Cursors(this, socket)
-    this.controls = new Controls(this, socket)
     const texts = new Texts(this)
     const fullscreenBtn = fullscreenButton(this)
 
+    const map = this.make.tilemap({ key: 'tilemap', tileWidth: 32, tileHeight: 32 })
+    const tileset = map.addTilesetImage('tileset')
+    const layer = map.createStaticLayer('ground', tileset, 0 ,0)
+    console.log(this.cache)
     this.cameras.main.setBounds(world.x, world.y, world.width, world.height)
-
-    socket.on('getPong', (id: string) => {
-      if (this.latency.id !== id) return
-      this.latency.canSend = true
-      this.latency.current = new Date().getTime() - this.latency.ping
-      if (this.latency.history.length >= 200) this.latency.history.shift()
-      this.latency.history.push(this.latency.current)
-      texts.setLatency(this.latency)
-    })
-    this.time.addEvent({
-      delay: 250, // max 4 times per second
-      loop: true,
-      callback: () => {
-        if (!this.latency.canSend) return
-        if (texts.hidden) return
-        this.latency.ping = new Date().getTime()
-        this.latency.id = Phaser.Math.RND.uuid()
-        this.latency.canSend = false
-        socket.emit('sendPing', this.latency.id)
-      }
-    })
 
     socket.on('changingRoom', (data: { scene: string; level: number }) => {
       console.log('You are changing room')
@@ -146,18 +117,6 @@ export default class MainScene extends Phaser.Scene {
     // request the initial state
     socket.emit('getInitialState')
 
-    // request the initial state every 15 seconds
-    // to make sure all objects are up to date
-    // in case we missed one (network issues)
-    // should be sent from the server side not the client
-    // this.time.addEvent({
-    //   delay: 15000,
-    //   loop: true,
-    //   callback: () => {
-    //     socket.emit('getInitialState')
-    //   }
-    // })
-
     // request the initial state if the game gets focus
     // e.g. if the users comes from another tab or window
     this.game.events.on('focus', () => socket.emit('getInitialState'))
@@ -168,9 +127,8 @@ export default class MainScene extends Phaser.Scene {
     })
 
     const resize = () => {
-      starfield.setScale(Math.max(this.cameras.main.height / starfield.height, 1))
+      //starfield.setScale(Math.max(this.cameras.main.height / starfield.height, 1))
       texts.resize()
-      if (this.controls) this.controls.resize()
       fullscreenBtn.setPosition(this.cameras.main.width - 16, 16)
       this.cameras.main.setScroll(this.cameras.main.worldView.x, world.height)
       levelText.setPosition(this.cameras.main.width / 2, 20)
@@ -194,9 +152,6 @@ export default class MainScene extends Phaser.Scene {
           if (obj.y !== null) sprite.y = obj.y
           if (obj.angle !== null && typeof obj.angle !== 'undefined') sprite.angle = obj.angle
           if (obj.skin !== null) {
-            if (obj.skin === SKINS.MUMMY) {
-              if (obj.direction !== null) setMummyAnimation(sprite, obj.direction)
-            }
             if (obj.skin === SKINS.DUDE) {
               if (obj.animation !== null) setDudeAnimation(sprite, obj.animation)
             }

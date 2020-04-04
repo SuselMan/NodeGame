@@ -1,23 +1,23 @@
 import { world } from '../../../client/config'
 import Box from '../arcadeObjects/box'
 import Dude from '../arcadeObjects/dude'
+import Collider from '../arcadeObjects/collider'
 import Cursors from '../../../client/components/cursors'
 import Star from '../arcadeObjects/star'
-import Mummy from '../arcadeObjects/mummy'
-import Map from '../arcadeObjects/map'
 import SyncManager from '../../managers/syncManager'
 import RoomManager from '../../managers/roomManager'
 import { SKINS } from '../../../constants'
 
+import tilemap from '../../../client/assets/tilemap.json'
+import tileset from '../../../client/assets/tileset.json'
+import trees from '../../../client/assets/trees.json'
+
 export default class MainScene extends Phaser.Scene {
   id = 0
   dudeGroup: Phaser.GameObjects.Group
-  boxGroup: Phaser.GameObjects.Group
-  mummyGroup: Phaser.GameObjects.Group
+  collidersGroup: Phaser.GameObjects.Group
   star: Star
   debug: any = {}
-  level = 0
-  map: Map
   objectsToSync: any = {}
   tick = 0
   roomManager: RoomManager
@@ -39,13 +39,16 @@ export default class MainScene extends Phaser.Scene {
   init() {
     try {
       // @ts-ignore
-      const { level = 0, roomId, roomManager } = this.game.config.preBoot()
-      this.level = level
+      const { roomId, roomManager } = this.game.config.preBoot()
       this.roomManager = roomManager
       this.roomId = roomId
     } catch (error) {
       if (!PHYSICS_DEBUG) console.error('onInit() failed!')
     }
+  }
+
+  preload() {
+    console.log('THISS ACTUALLY NEVER CALLED! WHY?')
   }
 
   create() {
@@ -58,21 +61,29 @@ export default class MainScene extends Phaser.Scene {
 
     this.physics.world.setBounds(world.x, world.y, world.width, world.height)
     this.dudeGroup = this.add.group()
-    this.boxGroup = this.add.group()
-    this.mummyGroup = this.add.group()
-    this.map = new Map(this, world, this.level)
-    const level = this.map.getLevel()
+    this.collidersGroup = this.add.group()
+    // @ts-ignore
+    const colliders = tilemap.layers[1].objects.filter((i) => i.type === 'collider')
+    colliders.forEach((collider) => {
+      this.collidersGroup.add(new Collider(this, this.newId(), collider.x, collider.y, collider.width, collider.height))
+    })
+
+    //const map = this.make.tilemap({ key: 'tilemap', tileWidth: 32, tileHeight: 32 });
+    // const tileset = map.addTilesetImage('tileset');
+    //const layer = map.createStaticLayer('ground', tileset, 0 ,0);
+
+    //this.map = new Map(this, world, this.level)
+    //const level = this.map.getLevel()
 
     // generate the level
-    level.forEach((row, y) => {
-      for (let x = 0; x < row.length; x++) {
-        const xx = x * this.map.tileSize + this.map.margin.x
-        const yy = y * this.map.tileSize + this.map.margin.y
-        if (row[x] === 'X') this.boxGroup.add(new Box(this, this.newId(), xx, yy))
-        if (row[x] === 'G') this.star = new Star(this, this.newId(), xx, yy)
-        if (row[x] === 'M') this.mummyGroup.add(new Mummy(this, this.newId(), xx, yy))
-      }
-    })
+    // level.forEach((row, y) => {
+    //   for (let x = 0; x < row.length; x++) {
+    //     const xx = x * this.map.tileSize + this.map.margin.x
+    //     const yy = y * this.map.tileSize + this.map.margin.y
+    //     if (row[x] === 'X') this.boxGroup.add(new Box(this, this.newId(), xx, yy))
+    //     if (row[x] === 'G') this.star = new Star(this, this.newId(), xx, yy)
+    //   }
+    // })
 
     if (PHYSICS_DEBUG) {
       this.add
@@ -89,10 +100,10 @@ export default class MainScene extends Phaser.Scene {
       this.dudeGroup.add(this.debug.dude)
 
       // this helps debugging
-      this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-        console.log(pointer.worldX, pointer.worldY)
-        console.log(this.map.getTileByCoordinates({ x: pointer.worldX, y: pointer.worldY }))
-      })
+      // this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      //   console.log(pointer.worldX, pointer.worldY)
+      //   console.log(this.map.getTileByCoordinates({ x: pointer.worldX, y: pointer.worldY }))
+      // })
     }
 
     this.events.addListener('createDude', (clientId: number, socketId: string) => {
@@ -112,7 +123,7 @@ export default class MainScene extends Phaser.Scene {
       })
       if (dudes[0]) {
         const b = res.updates
-        console.log('down', b >= 25 ? true : false, b)
+        //console.log('down', b >= 25 ? true : false, b)
         const updates = {
           left: b === 1 || b === 5 || b === 26 ? true : false,
           right: b === 2 || b === 6 || b === 27 ? true : false,
@@ -133,37 +144,16 @@ export default class MainScene extends Phaser.Scene {
       })
     })
 
-    this.physics.add.collider(this.dudeGroup, this.boxGroup)
-    this.physics.add.collider(this.mummyGroup, this.boxGroup)
-    // @ts-ignore
-    this.physics.add.overlap(this.mummyGroup, this.dudeGroup, (mummy: Mummy, dude: Dude) => {
-      if (mummy.dead) return
-      if (mummy.body.touching.up && dude.body.touching.down) {
-        dude.setVelocityY(-300)
-        mummy.kill()
-      } else {
-        dude.gotHit()
-      }
-    })
-    // @ts-ignore
-    this.physics.add.overlap(this.dudeGroup, this.star, (dude: Dude, star: Star) => {
-      if (dude.dead) return
-      dude.kill()
-
-      const nextLevel = this.level + 1 >= this.map.countTotalLevels() ? 0 : this.level + 1
-      const socket = this.roomManager.ioNspGame.sockets[dude.socketId] as any
-
-      this.roomManager.changeRoom(socket, 'ArcadeScene', nextLevel)
-    })
+    this.physics.add.collider(this.dudeGroup, this.collidersGroup)
   }
 
   /** Sends the initial state to the client */
   getInitialState() {
     const objects: any[] = []
 
-    SyncManager.prepareFromPhaserGroup(this.boxGroup, objects)
+    //SyncManager.prepareFromPhaserGroup(this.boxGroup, objects)
     SyncManager.prepareFromPhaserGroup(this.dudeGroup, objects)
-    SyncManager.prepareFromPhaserSprite(this.star, objects)
+    //SyncManager.prepareFromPhaserSprite(this.star, objects)
 
     return SyncManager.encode(objects)
   }
@@ -171,14 +161,6 @@ export default class MainScene extends Phaser.Scene {
   update() {
     this.tick++
     if (this.tick > 1000000) this.tick = 0
-
-    // @ts-ignore
-    this.mummyGroup.children.iterate((mummy: Mummy) => {
-      const coordinates = mummy.getLookAhead()
-      const tile = this.map.getTileByCoordinates(coordinates)
-      mummy.changeDirection(tile)
-      mummy.update()
-    })
 
     if (PHYSICS_DEBUG) {
       this.debug.cursors.update()
@@ -212,30 +194,18 @@ export default class MainScene extends Phaser.Scene {
     }
 
     // @ts-ignore
-    this.mummyGroup.children.iterate((child: Mummy) => {
-      const object = {
-        skin: child.skin,
-        direction: child.direction,
-        id: child.id,
-        x: child.body.position.x + child.body.width / 2,
-        y: child.body.position.y + child.body.height / 2
-      }
-      prepareObjectToSync(object)
-    })
-
-    // @ts-ignore
-    this.boxGroup.children.iterate((child: Box) => {
-      if (child.sync) {
-        const object = {
-          skin: child.skin,
-          id: child.id,
-          x: child.body.position.x + child.body.width / 2,
-          y: child.body.position.y + child.body.height / 2
-        }
-        prepareObjectToSync(object)
-      }
-      child.sync = false
-    })
+    // this.boxGroup.children.iterate((child: Box) => {
+    //   if (child.sync) {
+    //     const object = {
+    //       skin: child.skin,
+    //       id: child.id,
+    //       x: child.body.position.x + child.body.width / 2,
+    //       y: child.body.position.y + child.body.height / 2
+    //     }
+    //     prepareObjectToSync(object)
+    //   }
+    //   child.sync = false
+    // })
     // @ts-ignore
     this.dudeGroup.children.iterate((child: Dude) => {
       child.update()
@@ -263,16 +233,8 @@ export default class MainScene extends Phaser.Scene {
     const send: any[] = []
 
     Object.keys(this.objectsToSync).forEach(key => {
-      // we only sync the mummies on every 3th frame
-      if (this.objectsToSync[key].skin === SKINS.MUMMY) {
-        if (this.tick % 3 === 0) {
-          send.push(this.objectsToSync[key])
-          delete this.objectsToSync[key]
-        }
-      } else {
-        send.push(this.objectsToSync[key])
-        delete this.objectsToSync[key]
-      }
+      send.push(this.objectsToSync[key])
+      delete this.objectsToSync[key]
     })
 
     if (send.length > 0) {

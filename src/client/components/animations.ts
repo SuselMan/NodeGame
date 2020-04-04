@@ -26,18 +26,3 @@ export const setDudeAnimation = (sprite: Phaser.GameObjects.Sprite, animation: s
   if (!sprite.anims.isPlaying) sprite.play(animation)
   else if (sprite.anims.isPlaying && sprite.anims.getCurrentKey() !== animation) sprite.play(animation)
 }
-
-export const createMummyAnimation = (scene: Phaser.Scene) => {
-  scene.anims.create({
-    key: 'walk',
-    frames: scene.anims.generateFrameNumbers(SKINS.MUMMY.toString(), {}),
-    frameRate: 16,
-    repeat: 7
-  })
-}
-
-export const setMummyAnimation = (sprite: Phaser.GameObjects.Sprite, direction: string) => {
-  if (!sprite.anims.isPlaying) sprite.anims.play('walk')
-  const flipX = direction === 'left' ? true : false
-  sprite.setFlipX(flipX)
-}

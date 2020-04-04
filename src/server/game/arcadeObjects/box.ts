@@ -6,15 +6,16 @@ export default class Box extends Phaser.Physics.Arcade.Sprite {
   sync = true
 
   constructor(scene: Phaser.Scene, id: number, x: number, y: number) {
-    super(scene, x, y, '')
+    super(scene, x, y, '', )
     scene.add.existing(this)
     scene.physics.add.existing(this, true)
 
     // @ts-ignore
     this.body
-      .setSize(95, 95)
+      .setSize(95, 5)
       // 32 is the default width an height for an sprite if the texture can not be loaded
-      .setOffset(-32, 0)
+      //.setOffset(-32, 0)
+      this.setOrigin(0, 100)
 
     this.id = id.toString()
   }

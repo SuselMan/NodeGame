@@ -1,6 +1,6 @@
 import io from 'socket.io-client'
 import { SKINS } from '../../constants'
-import { createDudeAnimations, createMummyAnimation } from '../components/animations'
+import { createDudeAnimations } from '../components/animations'
 
 export default class PreloadScene extends Phaser.Scene {
   constructor() {
@@ -13,7 +13,15 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.image(SKINS.STAR.toString(), 'assets/star.png')
     this.load.image('bug', 'assets/bug.png')
     this.load.image('starfield', 'assets/starfield.jpg')
-    this.load.image('controls', 'assets/controls.png')
+
+    this.load.image('tree_0', 'assets/tree_0.png')
+    this.load.image('tree_1', 'assets/tree_1.png')
+    this.load.image('brush', 'assets/brush.png')
+    this.load.image('tileset', 'assets/tileset.png')
+    this.load.tilemapTiledJSON('tilemap', 'assets/tilemap.json')
+    this.load.json('treesData', 'assets/trees.json');
+
+
     this.load.spritesheet(SKINS.DUDE.toString(), 'assets/dude.png', {
       frameWidth: 32,
       frameHeight: 48
@@ -22,12 +30,10 @@ export default class PreloadScene extends Phaser.Scene {
       frameWidth: 64,
       frameHeight: 64
     })
-    this.load.spritesheet(SKINS.MUMMY.toString(), 'assets/mummy37x45.png', { frameWidth: 37, frameHeight: 45 })
   }
 
   create() {
     createDudeAnimations(this)
-    createMummyAnimation(this)
 
     // connecting to socket.io
     const url = `${location.origin}/G` /* short for stats */

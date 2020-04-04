@@ -65,6 +65,11 @@ export default class RoomManager {
     }
 
     this.addUser(socket)
+    if(!this.rooms[socket.room].scene) {
+      console.info('Harry i cannot feel a scene!')
+      console.info('It because there is no scene!')
+      return;
+    }
     this.rooms[socket.room].scene.events.emit('createDude', socket.clientId, socket.id)
   }
 

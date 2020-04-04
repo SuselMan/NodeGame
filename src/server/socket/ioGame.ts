@@ -41,7 +41,7 @@ export default class IoGame {
       socket.on('getInitialState', () => {
         if (roomManager.isRemoving(socket.room)) return
         if (!roomManager.roomExists(socket.room)) return
-
+        if(!roomManager.rooms[socket.room].scene) return
         const payload = {
           time: this.time,
           // @ts-ignore
