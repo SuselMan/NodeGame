@@ -1,9 +1,7 @@
 import Texts from '../components/texts'
 import Cursors from '../components/cursors'
 import { setDudeAnimation } from '../components/animations'
-import fullscreenButton from '../components/fullscreenButton'
 import { world } from '../config'
-import Resize from '../components/resize'
 
 import SyncManager from '../../server/managers/syncManager'
 import { SKINS } from '../../constants'
@@ -38,7 +36,7 @@ export default class MainScene extends Phaser.Scene {
     const socket = this.socket
     const levelText = this.add
       .text(0, 0, `Level ${this.level + 1}`, {
-        color: '#ffffff',
+        color: '#556539',
         fontSize: 42
       })
       .setOrigin(0.5, 0)
@@ -50,7 +48,6 @@ export default class MainScene extends Phaser.Scene {
    // const starfield = this.add.tileSprite(world.x, world.y, world.width, world.height, 'starfield').setOrigin(0)
     this.cursors = new Cursors(this, socket)
     const texts = new Texts(this)
-    const fullscreenBtn = fullscreenButton(this)
 
     const map = this.make.tilemap({ key: 'tilemap', tileWidth: 32, tileHeight: 32 })
     const tileset = map.addTilesetImage('tileset')
@@ -101,11 +98,6 @@ export default class MainScene extends Phaser.Scene {
 
           // set some properties to the sprite
           const sprite = this.objects[obj.id].sprite
-          // set scale
-          if (obj.scale) {
-            sprite.setScale(obj.scale)
-          }
-          // set scale
           if (obj.tint) {
             sprite.setTint(obj.tint)
           }
@@ -125,20 +117,6 @@ export default class MainScene extends Phaser.Scene {
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       console.log(pointer.worldX, pointer.worldY)
     })
-
-    const resize = () => {
-      //starfield.setScale(Math.max(this.cameras.main.height / starfield.height, 1))
-      texts.resize()
-      fullscreenBtn.setPosition(this.cameras.main.width - 16, 16)
-      this.cameras.main.setScroll(this.cameras.main.worldView.x, world.height)
-      levelText.setPosition(this.cameras.main.width / 2, 20)
-    }
-
-    this.scale.on('resize', (gameSize: any, baseSize: any, displaySize: any, resolution: any) => {
-      this.cameras.resize(gameSize.width, gameSize.height)
-      resize()
-    })
-    Resize(this.game)
   }
 
   update(time: number, delta: number) {

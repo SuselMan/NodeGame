@@ -54,7 +54,6 @@ export default class SyncManager {
     addToObjectToSync('skin', obj.skin !== 'undefined' ? obj.skin : null)
     addToObjectToSync('animation', obj.animation || null)
     addToObjectToSync('direction', obj.direction || null)
-    addToObjectToSync('scale', obj.scale && obj.scale !== 1 ? obj.scale : null)
     addToObjectToSync('tint', obj.tint ? obj.tint : null)
     addToObjectToSync('clientId', obj.clientId || null)
     addToObjectToSync('category', obj.category || null)
@@ -66,7 +65,7 @@ export default class SyncManager {
 
   static get keys() {
     // sort these based on most used
-    return ['id', 'x', 'y', 'angle', 'dead', 'skin', 'animation', 'direction', 'scale', 'tint', 'clientId', 'category']
+    return ['id', 'x', 'y', 'angle', 'dead', 'skin', 'animation', 'direction', 'tint', 'clientId', 'category']
   }
 
   static decode(data: any) {
@@ -82,7 +81,7 @@ export default class SyncManager {
         obj[key] = parseInt(value, 36).toString()
       }
       // numbers
-      else if (['skin', 'scale'].includes(key)) {
+      else if (['skin'].includes(key)) {
         obj[key] = value !== '' ? parseInt(value, 10) : null
       }
       // numbers (radix 36)

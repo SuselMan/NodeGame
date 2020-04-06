@@ -49,7 +49,6 @@ export default class Texts {
     })
 
     this.makeBug()
-    this.resize()
     this.toggleHidden()
     this.scene.events.on('update', this.update, this)
   }
@@ -77,14 +76,6 @@ export default class Texts {
         this.textObjects[key].setAlpha(this.hidden ? 0 : 1)
       }
     }
-  }
-
-  resize() {
-    texts.forEach(text => {
-      const textObj = this.textObjects[text.type]
-      textObj.setPosition(this.scene.cameras.main.width / 2, text.y)
-    })
-    if (this.bug) this.bug.setPosition(16, 16)
   }
 
   setConnectCounter(connectCounter: number) {

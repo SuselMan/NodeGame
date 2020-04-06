@@ -14,10 +14,6 @@ const Game = (io: SocketIO.Namespace) => {
   const href = location.href
 
   config.type = Phaser.AUTO
-  config.scale = {
-    mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH
-  }
 
   if (/arcade/.test(href)) {
     config.scene = [ArcadeScene]
