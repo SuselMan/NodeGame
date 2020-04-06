@@ -22,9 +22,9 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.json('treesData', 'assets/trees.json');
 
 
-    this.load.spritesheet(SKINS.DUDE.toString(), 'assets/dude.png', {
-      frameWidth: 32,
-      frameHeight: 48
+    this.load.spritesheet(SKINS.DUDE.toString(), 'assets/hero_run.png', {
+      frameWidth: 64,
+      frameHeight: 64
     })
     this.load.spritesheet('fullscreen', 'assets/fullscreen.png', {
       frameWidth: 64,
