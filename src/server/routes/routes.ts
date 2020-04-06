@@ -2,13 +2,12 @@ import express from 'express'
 import pidusage from 'pidusage'
 import path from 'path'
 import RoomManager from '../managers/roomManager'
-import IoStats from '../socket/ioStats'
 
 export default class Routes {
   router: express.Router
   time = new Date()
 
-  constructor(public roomManager: RoomManager, public ioStats: IoStats) {
+  constructor(public roomManager: RoomManager) {
     this.router = express.Router()
 
     this.router.get('/', (req, res) => {
@@ -42,8 +41,6 @@ export default class Routes {
           </style>
           <h1>Phaser 3: Real-Time Multiplayer Game with Physics</h1>
           <a href="/play">Play the Game</a>
-          <a href="/physics">Debug the Physics</a>
-          <a href="/stats">View Server Stats</a>
         </body>`)
     })
 
@@ -78,27 +75,6 @@ export default class Routes {
 
     this.router.get('/arcade', (req, res) => {
       res.sendFile(path.join(__dirname, '../../dist/physics/index.html'))
-    })
-
-    this.router.get('/stats', (req, res) => {
-      res.sendFile(path.join(__dirname, '../../dist/stats/index.html'))
-    })
-
-    this.router.get('/stats/get', (req, res) => {
-      pidusage(process.pid, (err, stats) => {
-        if (err) return res.status(500).json({ err })
-
-        const objects = ioStats.getTotalObjects()
-
-        const payload = {
-          ...stats,
-          users: roomManager.getAllUsersArray().length,
-          rooms: roomManager.getRoomsArray().length,
-          objects,
-          time: this.time
-        }
-        res.json({ payload })
-      })
     })
   }
 }

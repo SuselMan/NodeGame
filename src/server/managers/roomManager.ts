@@ -33,12 +33,11 @@ import { MAX_PLAYERS_PER_ROOM, USER_KICK_TIMEOUT } from '../../constants'
 const randomDataGenerator = new phaserMath.RandomDataGenerator()
 
 import uuidv4 from 'uuid/v4'
-import Stats from '../socket/ioStats'
 
 export default class RoomManager {
   rooms: Rooms = {}
 
-  constructor(public ioNspGame: SocketIO.Namespace, public stats: Stats) {
+  constructor(public ioNspGame: SocketIO.Namespace) {
     setInterval(() => {
       // this.removeInactiveRooms()
       // this.removeInactiveUsers()
@@ -113,7 +112,6 @@ export default class RoomManager {
 
     if (this.userExists(roomId, userId)) {
       delete this.rooms[roomId].users[userId]
-      if (log) this.stats.log(`User <b>${userId}</b> disconnected!`)
       return true
     }
     return false
@@ -137,7 +135,6 @@ export default class RoomManager {
   }
 
   createRoom = async (roomId: string, scene: string, level: number) => {
-    this.stats.log(`Create new room <b>${roomId}</b>`)
 
     const game: PhaserGame = await Game(this, roomId, { scene, level })
 
@@ -151,13 +148,10 @@ export default class RoomManager {
       scene: game.scene.keys.MainScene,
       removing: false
     }
-
-    this.stats.log(`Room <b>${roomId}</b> created!`)
   }
 
   removeRoom = async (roomId: string) => {
     if (this.rooms[roomId].removing) return
-    this.stats.log(`Removing room <b>${roomId}</b>`)
     this.rooms[roomId].removing = true
     this.rooms[roomId].scene.events.emit('stopScene')
 
@@ -166,9 +160,6 @@ export default class RoomManager {
       // @ts-ignore
       this.rooms[roomId].game = null
       delete this.rooms[roomId]
-
-      this.stats.log(`Room <b>${roomId}</b> has been removed!`)
-      this.stats.log(`Remaining rooms: ${Object.keys(this.rooms).length}`)
     }, 5000)
   }
 
@@ -243,17 +234,5 @@ export default class RoomManager {
     this.getRoomsArray().forEach((room: Room) => {
       if (!room.users || Object.keys(room.users).length === 0) this.removeRoom(room.roomId)
     })
-  }
-
-  removeInactiveUsers() {
-    // this.getAllUsersArray().forEach((user: User) => {
-    //   if (Date.now() - user.lastUpdate > USER_KICK_TIMEOUT) {
-    //     const removed = this.removeUser(user.roomId, user.id, false)
-    //     const disconnected = this.disconnectUser(user.id)
-    //     if (removed && disconnected) {
-    //       this.stats.log(`Kick user <b>${user.clientId}</b> from room <b>${user.roomId}</b>`)
-    //     }
-    //   }
-    // })
   }
 }

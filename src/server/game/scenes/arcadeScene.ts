@@ -50,9 +50,7 @@ export default class MainScene extends Phaser.Scene {
   create() {
     // this will stop the scene
     this.events.addListener('stopScene', () => {
-      this.roomManager.stats.removeTotalObjects(this.roomId)
       this.scene.stop()
-      this.roomManager.stats.log(`Scene in roomId <b>${this.roomId}</b> has stopped!`)
     })
 
     this.physics.world.setBounds(world.x, world.y, world.width, world.height)

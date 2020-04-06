@@ -1,18 +1,16 @@
 import RoomManager from '../managers/roomManager'
-import IoStats from './ioStats'
 
 /** Handles all the communication for /game namespace (ioNspGame) */
 export default class IoGame {
   time = new Date()
 
-  constructor(public ioNspGame: SocketIO.Namespace, public ioStats: IoStats, public roomManager: RoomManager) {
+  constructor(public ioNspGame: SocketIO.Namespace, public roomManager: RoomManager) {
     ioNspGame.on('connection', async (socket: Socket) => {
       roomManager.generateClientId(socket)
 
       socket.on('joinRoom', async (data: { scene: string; level: number }) => {
         const { scene, level } = data
         await roomManager.joinRoom(socket, scene, +level)
-        ioStats.log(`New user <b>${socket.id}</b> connected! to room ${socket.room}`)
       })
 
       socket.on('disconnect', () => {
