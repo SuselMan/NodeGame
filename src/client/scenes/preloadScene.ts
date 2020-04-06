@@ -9,10 +9,7 @@ export default class PreloadScene extends Phaser.Scene {
 
   preload() {
     this.load.setBaseURL('static/client')
-    this.load.image(SKINS.BOX.toString(), 'assets/box.png')
-    this.load.image(SKINS.STAR.toString(), 'assets/star.png')
     this.load.image('bug', 'assets/bug.png')
-    this.load.image('starfield', 'assets/starfield.jpg')
 
     this.load.image('tree_0', 'assets/tree_0.png')
     this.load.image('tree_1', 'assets/tree_1.png')

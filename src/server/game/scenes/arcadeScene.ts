@@ -1,12 +1,9 @@
 import { world } from '../../../client/config'
-import Box from '../arcadeObjects/box'
 import Dude from '../arcadeObjects/dude'
 import Collider from '../arcadeObjects/collider'
 import Cursors from '../../../client/components/cursors'
-import Star from '../arcadeObjects/star'
 import SyncManager from '../../managers/syncManager'
 import RoomManager from '../../managers/roomManager'
-import { SKINS } from '../../../constants'
 
 import tilemap from '../../../client/assets/tilemap.json'
 import tileset from '../../../client/assets/tileset.json'
@@ -16,7 +13,6 @@ export default class MainScene extends Phaser.Scene {
   id = 0
   dudeGroup: Phaser.GameObjects.Group
   collidersGroup: Phaser.GameObjects.Group
-  star: Star
   debug: any = {}
   objectsToSync: any = {}
   tick = 0
@@ -68,43 +64,6 @@ export default class MainScene extends Phaser.Scene {
       this.collidersGroup.add(new Collider(this, this.newId(), collider.x, collider.y, collider.width, collider.height))
     })
 
-    //const map = this.make.tilemap({ key: 'tilemap', tileWidth: 32, tileHeight: 32 });
-    // const tileset = map.addTilesetImage('tileset');
-    //const layer = map.createStaticLayer('ground', tileset, 0 ,0);
-
-    //this.map = new Map(this, world, this.level)
-    //const level = this.map.getLevel()
-
-    // generate the level
-    // level.forEach((row, y) => {
-    //   for (let x = 0; x < row.length; x++) {
-    //     const xx = x * this.map.tileSize + this.map.margin.x
-    //     const yy = y * this.map.tileSize + this.map.margin.y
-    //     if (row[x] === 'X') this.boxGroup.add(new Box(this, this.newId(), xx, yy))
-    //     if (row[x] === 'G') this.star = new Star(this, this.newId(), xx, yy)
-    //   }
-    // })
-
-    if (PHYSICS_DEBUG) {
-      this.add
-        .text(24, 24, 'Physics Debugging Version\nMove with Arrow Keys', {
-          fontSize: 36
-        })
-        .setScrollFactor(0)
-        .setOrigin(0)
-        .setAlpha(0.6)
-      // mock socket
-      this.debug.socket = { emit: () => { console.info('emit') } }
-      this.debug.cursors = new Cursors(this, this.debug.socket)
-      this.debug.dude = new Dude(this, this.newId(), { clientId: 55555, socketId: 'some-socket-id' })
-      this.dudeGroup.add(this.debug.dude)
-
-      // this helps debugging
-      // this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-      //   console.log(pointer.worldX, pointer.worldY)
-      //   console.log(this.map.getTileByCoordinates({ x: pointer.worldX, y: pointer.worldY }))
-      // })
-    }
 
     this.events.addListener('createDude', (clientId: number, socketId: string) => {
       let dude: Dude = this.dudeGroup.getFirstDead()
@@ -150,10 +109,7 @@ export default class MainScene extends Phaser.Scene {
   /** Sends the initial state to the client */
   getInitialState() {
     const objects: any[] = []
-
-    //SyncManager.prepareFromPhaserGroup(this.boxGroup, objects)
     SyncManager.prepareFromPhaserGroup(this.dudeGroup, objects)
-    //SyncManager.prepareFromPhaserSprite(this.star, objects)
 
     return SyncManager.encode(objects)
   }
@@ -179,18 +135,6 @@ export default class MainScene extends Phaser.Scene {
     const prepareObjectToSync = (obj: any) => {
       const cleanObjectToSync = SyncManager.cleanObjectToSync(obj)
       this.objectsToSync = SyncManager.mergeObjectToSync(cleanObjectToSync, this.objectsToSync)
-    }
-
-    if (this.star && this.star.sync) {
-      const starObj = {
-        skin: this.star.skin,
-        tint: this.star.tint,
-        id: this.star.id,
-        x: this.star.body.position.x + this.star.body.width / 2,
-        y: this.star.body.position.y + this.star.body.height / 2
-      }
-      prepareObjectToSync(starObj)
-      this.star.sync = false
     }
 
     // @ts-ignore

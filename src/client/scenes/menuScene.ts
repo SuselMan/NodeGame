@@ -20,7 +20,7 @@ export default class MenuScene extends Phaser.Scene {
 
     const texts: any[] = []
 
-    texts.push(this.add.text(0, 0, 'Choose which Level\nyou want to play', styles).setOrigin(0.5, 0))
+    texts.push(this.add.text(0, 0, 'Hi, this is the game!', styles).setOrigin(0.5, 0))
 
     texts.push(
       this.add
@@ -29,28 +29,6 @@ export default class MenuScene extends Phaser.Scene {
         .setInteractive()
         .on('pointerdown', () => {
           this.scene.start('MainScene', { scene: 'ArcadeScene', level: 0, socket: this.socket })
-        })
-    )
-
-    texts.push(
-      this.add
-        .text(0, 0, 'Arcade Physics (Level 2)', styles)
-        .setOrigin(0.5, 0)
-        .setInteractive()
-        .on('pointerdown', () => {
-          this.scene.stop()
-          this.scene.start('MainScene', { scene: 'ArcadeScene', level: 1, socket: this.socket })
-        })
-    )
-
-    texts.push(
-      this.add
-        .text(0, 0, 'Arcade Physics (Level 3)', styles)
-        .setOrigin(0.5, 0)
-        .setInteractive()
-        .on('pointerdown', () => {
-          this.scene.stop()
-          this.scene.start('MainScene', { scene: 'ArcadeScene', level: 2, socket: this.socket })
         })
     )
 

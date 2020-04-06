@@ -40,8 +40,8 @@ export default class RoomManager {
 
   constructor(public ioNspGame: SocketIO.Namespace, public stats: Stats) {
     setInterval(() => {
-      this.removeInactiveRooms()
-      this.removeInactiveUsers()
+      // this.removeInactiveRooms()
+      // this.removeInactiveUsers()
     }, 10000)
   }
 
@@ -246,14 +246,14 @@ export default class RoomManager {
   }
 
   removeInactiveUsers() {
-    this.getAllUsersArray().forEach((user: User) => {
-      if (Date.now() - user.lastUpdate > USER_KICK_TIMEOUT) {
-        const removed = this.removeUser(user.roomId, user.id, false)
-        const disconnected = this.disconnectUser(user.id)
-        if (removed && disconnected) {
-          this.stats.log(`Kick user <b>${user.clientId}</b> from room <b>${user.roomId}</b>`)
-        }
-      }
-    })
+    // this.getAllUsersArray().forEach((user: User) => {
+    //   if (Date.now() - user.lastUpdate > USER_KICK_TIMEOUT) {
+    //     const removed = this.removeUser(user.roomId, user.id, false)
+    //     const disconnected = this.disconnectUser(user.id)
+    //     if (removed && disconnected) {
+    //       this.stats.log(`Kick user <b>${user.clientId}</b> from room <b>${user.roomId}</b>`)
+    //     }
+    //   }
+    // })
   }
 }
