@@ -49,9 +49,9 @@ export default class MainScene extends Phaser.Scene {
     this.cursors = new Cursors(this, socket)
     const texts = new Texts(this)
 
-    const map = this.make.tilemap({ key: 'tilemap', tileWidth: 32, tileHeight: 32 })
+    const map = this.add.tilemap('tilemap')
     const tileset = map.addTilesetImage('tileset')
-    const layer = map.createStaticLayer('ground', tileset, 0 ,0)
+    const layer = map.createDynamicLayer('ground', tileset, 0 ,0)
     console.log(this.cache)
     this.cameras.main.setBounds(world.x, world.y, world.width, world.height)
 
