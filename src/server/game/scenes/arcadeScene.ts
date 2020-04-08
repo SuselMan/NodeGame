@@ -21,7 +21,7 @@ export default class MainScene extends Phaser.Scene {
 
   constructor() {
     // @ts-ignore
-    super({ key: 'MainScene', plugins: PHYSICS_DEBUG ? null : ['Clock'], active: false, cameras: null })
+    super({ key: 'MainScene', plugins: ['Clock'], active: false, cameras: null })
     // see all scene plugins:
     // Phaser.Plugins.DefaultScene
     // https://github.com/photonstorm/phaser/blob/master/src/plugins/DefaultPlugins.js#L76
@@ -39,7 +39,7 @@ export default class MainScene extends Phaser.Scene {
       this.roomManager = roomManager
       this.roomId = roomId
     } catch (error) {
-      if (!PHYSICS_DEBUG) console.error('onInit() failed!')
+      console.error('onInit() failed!')
     }
   }
 
@@ -75,10 +75,12 @@ export default class MainScene extends Phaser.Scene {
 
     this.events.addListener('U' /* short for updateDude */, (res: any) => {
       // @ts-ignore
-      const dudes: Dude[] = this.dudeGroup.children.getArray().filter((dude: Dude) => {
+      const dude: Dude = this.dudeGroup.children.getArray().find((dude: Dude) => {
+        // todo: this can take too much time for big amount of users ( > 100 ?), use hash table
+        // and why FILTER instead of find??? stupid actually
         return dude.clientId && dude.clientId === res.clientId
       })
-      if (dudes[0]) {
+      if (dude) {
         const b = res.updates
         //console.log('down', b >= 25 ? true : false, b)
         const updates = {
@@ -88,7 +90,7 @@ export default class MainScene extends Phaser.Scene {
           down: b >= 25 ? true : false,
           none: b === 8 ? true : false
         }
-        dudes[0].setUpdates(updates)
+        dude.setUpdates(updates)
       }
     })
 
@@ -115,20 +117,6 @@ export default class MainScene extends Phaser.Scene {
   update() {
     this.tick++
     if (this.tick > 1000000) this.tick = 0
-
-    if (PHYSICS_DEBUG) {
-      this.debug.cursors.update()
-      const cursorsDown = this.debug.cursors.cursorsDown()
-      const dude: Dude = this.debug.dude
-      dude.setUpdates(cursorsDown)
-      dude.update()
-      this.cameras.main.setScroll(
-        dude.body.position.x - this.cameras.main.width / 2,
-        dude.body.position.y - this.cameras.main.height * 0.8
-      )
-    }
-
-    if (PHYSICS_DEBUG) return
 
     const prepareObjectToSync = (obj: any) => {
       const cleanObjectToSync = SyncManager.cleanObjectToSync(obj)

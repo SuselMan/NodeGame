@@ -41,8 +41,6 @@
       }  else if (this.cursors.down.isDown) {
         this.down = true
       }
-
-      if (!PHYSICS_DEBUG) {
         let total = 0
         if (this.left) total += 1
         if (this.right) total += 2
@@ -50,7 +48,6 @@
         if (this.down) total += 25
         if (this.none) total += 8
         this.socket.emit('U' /* short for updateDude */, total)
-      }
     }
 
     this.prevNone = this.none
