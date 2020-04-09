@@ -32,7 +32,7 @@ export default class Dude extends Phaser.Physics.Arcade.Sprite {
     this.setCollideWorldBounds(true).setOrigin(0)
 
     // @ts-ignore
-    this.body.setSize(32, 48)
+    this.body.setSize(2, 2)
 
     // matterJS uses an id per object, so I do the same here to be consistent
     // @ts-ignore
@@ -75,11 +75,11 @@ export default class Dude extends Phaser.Physics.Arcade.Sprite {
     if (this.updates.up) this.setVelocityY(-600)
     else if (this.updates.down) this.setVelocityY(600)
     else this.setVelocityY(0)
-    let animation = '';
-    if(this.body.velocity.y >= 0.5) animation += 'down'
-    if(this.body.velocity.y <= -0.5) animation += 'up'
-    if(this.body.velocity.x <= -0.5) animation += 'left'
-    if(this.body.velocity.x >= 0.5) animation += 'right'
+    let animation = ''
+    if (this.body.velocity.y >= 0.5) animation += 'down'
+    if (this.body.velocity.y <= -0.5) animation += 'up'
+    if (this.body.velocity.x <= -0.5) animation += 'left'
+    if (this.body.velocity.x >= 0.5) animation += 'right'
     this.animation = animation === '' ? 'idle' : animation
 
     this.updates = {}

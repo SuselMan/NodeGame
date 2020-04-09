@@ -57,7 +57,6 @@ export const createDudeAnimations = (scene: Phaser.Scene) => {
     repeat: -1
   })
 
-
   scene.anims.create({
     key: 'idle',
     frames: [{ key: SKINS.DUDE.toString(), frame: 20 }],

@@ -21,10 +21,6 @@ export default class IoGame {
         roomManager.changeRoom(socket, data.scene, +data.level)
       })
 
-      socket.on('sendPing', (id: string) => {
-        socket.emit('getPong', id)
-      })
-
       socket.on('U' /* short for updateDude */, (updates: any) => {
         if (roomManager.isRemoving(socket.room)) return
         if (!roomManager.userExists(socket.room, socket.id)) return
@@ -39,7 +35,7 @@ export default class IoGame {
       socket.on('getInitialState', () => {
         if (roomManager.isRemoving(socket.room)) return
         if (!roomManager.roomExists(socket.room)) return
-        if(!roomManager.rooms[socket.room].scene) return
+        if (!roomManager.rooms[socket.room].scene) return
         const payload = {
           time: this.time,
           // @ts-ignore

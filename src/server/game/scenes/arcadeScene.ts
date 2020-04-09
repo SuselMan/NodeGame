@@ -4,6 +4,7 @@ import Collider from '../arcadeObjects/collider'
 import Cursors from '../../../client/components/cursors'
 import SyncManager from '../../managers/syncManager'
 import RoomManager from '../../managers/roomManager'
+import Hero from '../../../shared/units/Hero'
 
 import tilemap from '../../../client/assets/tilemap.json'
 import tileset from '../../../client/assets/tileset.json'
@@ -12,6 +13,7 @@ import trees from '../../../client/assets/trees.json'
 export default class MainScene extends Phaser.Scene {
   id = 0
   dudeGroup: Phaser.GameObjects.Group
+  heroGroup: Phaser.GameObjects.Group
   collidersGroup: Phaser.GameObjects.Group
   debug: any = {}
   objectsToSync: any = {}
@@ -44,7 +46,7 @@ export default class MainScene extends Phaser.Scene {
   }
 
   preload() {
-    console.log('THISS ACTUALLY NEVER CALLED! WHY?')
+    console.log('THIS IS ACTUALLY NEVER CALLED! WHY?')
   }
 
   create() {
@@ -55,6 +57,7 @@ export default class MainScene extends Phaser.Scene {
 
     this.physics.world.setBounds(world.x, world.y, world.width, world.height)
     this.dudeGroup = this.add.group()
+    this.heroGroup = this.add.group()
     this.collidersGroup = this.add.group()
     // @ts-ignore
     const colliders = tilemap.layers[1].objects.filter((i) => i.type === 'collider')
@@ -62,15 +65,20 @@ export default class MainScene extends Phaser.Scene {
       this.collidersGroup.add(new Collider(this, this.newId(), collider.x, collider.y, collider.width, collider.height))
     })
 
+    // this.events.addListener('createDude', (clientId: number, socketId: string) => {
+    //   let dude: Dude = this.dudeGroup.getFirstDead()
+    //   if (dude) {
+    //     dude.revive(clientId, socketId)
+    //   } else {
+    //     dude = new Dude(this, this.newId(), { clientId, socketId })
+    //     this.dudeGroup.add(dude)
+    //   }
+    // })
 
     this.events.addListener('createDude', (clientId: number, socketId: string) => {
-      let dude: Dude = this.dudeGroup.getFirstDead()
-      if (dude) {
-        dude.revive(clientId, socketId)
-      } else {
-        dude = new Dude(this, this.newId(), { clientId, socketId })
-        this.dudeGroup.add(dude)
-      }
+      const hero: Hero = new Hero(this, {clientID: clientId, socketId,
+        state: {x:20, y: 20, stateID: 0, stamina: 100, health: 100, isDeadObject: false, speed: 300}})
+      this.heroGroup.add(hero)
     })
 
     this.events.addListener('U' /* short for updateDude */, (res: any) => {
@@ -82,7 +90,7 @@ export default class MainScene extends Phaser.Scene {
       })
       if (dude) {
         const b = res.updates
-        //console.log('down', b >= 25 ? true : false, b)
+        // console.log('down', b >= 25 ? true : false, b)
         const updates = {
           left: b === 1 || b === 5 || b === 26 ? true : false,
           right: b === 2 || b === 6 || b === 27 ? true : false,
@@ -168,10 +176,12 @@ export default class MainScene extends Phaser.Scene {
     })
 
     if (send.length > 0) {
+      setTimeout(() => {
+        this.roomManager.ioNspGame
+          .in(this.roomId)
+          .emit('SyncGame' /* short for syncGame */, { O /* short for objects */: SyncManager.encode(send) })
+      }, 100)
       // send the objects to sync to all connected clients in this.roomId
-      this.roomManager.ioNspGame
-        .in(this.roomId)
-        .emit('S' /* short for syncGame */, { O /* short for objects */: SyncManager.encode(send) })
     }
   }
 }

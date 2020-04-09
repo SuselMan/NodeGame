@@ -38,10 +38,7 @@ export default class RoomManager {
   rooms: Rooms = {}
 
   constructor(public ioNspGame: SocketIO.Namespace) {
-    setInterval(() => {
-      // this.removeInactiveRooms()
-      // this.removeInactiveUsers()
-    }, 10000)
+    console.log('Room manager initialized')
   }
 
   generateClientId(socket: Socket) {
@@ -64,10 +61,10 @@ export default class RoomManager {
     }
 
     this.addUser(socket)
-    if(!this.rooms[socket.room].scene) {
+    if (!this.rooms[socket.room].scene) {
       console.info('Harry i cannot feel a scene!')
       console.info('It because there is no scene!')
-      return;
+      return
     }
     this.rooms[socket.room].scene.events.emit('createDude', socket.clientId, socket.id)
   }

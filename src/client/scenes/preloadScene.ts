@@ -16,8 +16,7 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.image('brush', 'assets/brush.png')
     this.load.image('tileset', 'assets/tileset.png')
     this.load.tilemapTiledJSON('tilemap', 'assets/tilemap.json')
-    this.load.json('treesData', 'assets/trees.json');
-
+    this.load.json('treesData', 'assets/trees.json')
 
     this.load.spritesheet(SKINS.DUDE.toString(), 'assets/hero_run.png', {
       frameWidth: 64,

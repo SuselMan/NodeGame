@@ -1,5 +1,4 @@
 
-
 export default class MenuScene extends Phaser.Scene {
   socket: Socket
   constructor() {

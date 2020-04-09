@@ -43,16 +43,13 @@ export default class MainScene extends Phaser.Scene {
       .setDepth(100)
       .setScrollFactor(0)
 
-
-
    // const starfield = this.add.tileSprite(world.x, world.y, world.width, world.height, 'starfield').setOrigin(0)
     this.cursors = new Cursors(this, socket)
     const texts = new Texts(this)
 
     const map = this.add.tilemap('tilemap')
     const tileset = map.addTilesetImage('tileset')
-    const layer = map.createDynamicLayer('ground', tileset, 0 ,0)
-    console.log(this.cache)
+    const layer = map.createDynamicLayer('ground', tileset, 0 , 0)
     this.cameras.main.setBounds(world.x, world.y, world.width, world.height)
 
     socket.on('changingRoom', (data: { scene: string; level: number }) => {
@@ -67,7 +64,7 @@ export default class MainScene extends Phaser.Scene {
       levelText.setText(`Level ${this.level + 1}`)
     })
 
-    socket.on('S' /* short for syncGame */, (res: any) => {
+    socket.on('SyncGame' /* short for syncGame */, (res: any) => {
       if (res.connectCounter) texts.setConnectCounter(res.connectCounter)
       if (res.time) texts.setTime(res.time)
       if (res.roomId) texts.setRoomId(res.roomId)
