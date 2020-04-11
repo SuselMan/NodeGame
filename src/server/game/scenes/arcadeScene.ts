@@ -4,7 +4,7 @@ import Collider from '../arcadeObjects/collider'
 import Cursors from '../../../client/components/cursors'
 import SyncManager from '../../managers/syncManager'
 import RoomManager from '../../managers/roomManager'
-import Hero from '../../../shared/units/Hero'
+import Hero from '../../../shared/units/Hero/Hero'
 
 import tilemap from '../../../client/assets/tilemap.json'
 import tileset from '../../../client/assets/tileset.json'
@@ -58,6 +58,7 @@ export default class MainScene extends Phaser.Scene {
     this.physics.world.setBounds(world.x, world.y, world.width, world.height)
     this.dudeGroup = this.add.group()
     this.heroGroup = this.add.group()
+   // this.heroCollidersGroup = this.add.group()
     this.collidersGroup = this.add.group()
     // @ts-ignore
     const colliders = tilemap.layers[1].objects.filter((i) => i.type === 'collider')
@@ -65,21 +66,21 @@ export default class MainScene extends Phaser.Scene {
       this.collidersGroup.add(new Collider(this, this.newId(), collider.x, collider.y, collider.width, collider.height))
     })
 
-    // this.events.addListener('createDude', (clientId: number, socketId: string) => {
-    //   let dude: Dude = this.dudeGroup.getFirstDead()
-    //   if (dude) {
-    //     dude.revive(clientId, socketId)
-    //   } else {
-    //     dude = new Dude(this, this.newId(), { clientId, socketId })
-    //     this.dudeGroup.add(dude)
-    //   }
-    // })
-
     this.events.addListener('createDude', (clientId: number, socketId: string) => {
-      const hero: Hero = new Hero(this, {clientID: clientId, socketId,
-        state: {x:20, y: 20, stateID: 0, stamina: 100, health: 100, isDeadObject: false, speed: 300}})
-      this.heroGroup.add(hero)
+      let dude: Dude = this.dudeGroup.getFirstDead()
+      if (dude) {
+        dude.revive(clientId, socketId)
+      } else {
+        dude = new Dude(this, this.newId(), { clientId, socketId })
+        this.dudeGroup.add(dude)
+      }
     })
+
+    // this.events.addListener('createDude', (clientId: number, socketId: string) => {
+    //   const hero: Hero = new Hero(this, {clientID: clientId, socketId,
+    //     state: {x:20, y: 20, stateID: 0, stamina: 100, health: 100, isDeadObject: false, speed: 300}})
+    //   this.heroGroup.add(hero)
+    // })
 
     this.events.addListener('U' /* short for updateDude */, (res: any) => {
       // @ts-ignore

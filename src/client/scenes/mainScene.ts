@@ -4,7 +4,8 @@ import { setDudeAnimation } from '../components/animations'
 import { world } from '../config'
 
 import SyncManager from '../../server/managers/syncManager'
-import { SKINS } from '../../constants'
+import { SKINS, PROJECT_SIDE } from '../../constants'
+import Hero from '../../shared/units/Hero/Hero'
 
 interface Objects {
   [key: string]: any
@@ -114,6 +115,9 @@ export default class MainScene extends Phaser.Scene {
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       console.log(pointer.worldX, pointer.worldY)
     })
+
+    console.log(PROJECT_SIDE)
+    const hero = new Hero(this, { clientID: socket.clientId, socketId: '0', projectSide: PROJECT_SIDE.CLIENT})
   }
 
   update(time: number, delta: number) {

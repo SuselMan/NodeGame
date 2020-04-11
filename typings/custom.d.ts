@@ -26,3 +26,6 @@ interface Latency {
   canSend: boolean
   history: any[]
 }
+
+declare type Square = { x: number; y: number, w: number; h: number}
+declare type Size = { w: number; h: number}
