@@ -1,4 +1,4 @@
-import RoomManager from '../managers/roomManager'
+import RoomManager from '../Managers/roomManager'
 
 /** Handles all the communication for /game namespace (ioNspGame) */
 export default class IoGame {
@@ -21,12 +21,12 @@ export default class IoGame {
         roomManager.changeRoom(socket, data.scene, +data.level)
       })
 
-      socket.on('U' /* short for updateDude */, (updates: any) => {
+      socket.on('updateDude' /* short for updateDude */, (updates: any) => {
         if (roomManager.isRemoving(socket.room)) return
         if (!roomManager.userExists(socket.room, socket.id)) return
 
         roomManager.rooms[socket.room].users[socket.id].lastUpdate = Date.now()
-        roomManager.rooms[socket.room].scene.events.emit('U' /* short for updateDude */, {
+        roomManager.rooms[socket.room].scene.events.emit('updateDude' /* short for updateDude */, {
           clientId: socket.clientId,
           updates
         })

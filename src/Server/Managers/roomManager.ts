@@ -26,7 +26,7 @@ interface Room {
 interface Rooms {
   [room: string]: Room
 }
-import Game, { PhaserGame } from '../game/game'
+import Game from '../Game/game'
 import { Math as phaserMath } from 'phaser'
 import { MAX_PLAYERS_PER_ROOM, USER_KICK_TIMEOUT } from '../../constants'
 
@@ -133,7 +133,7 @@ export default class RoomManager {
 
   createRoom = async (roomId: string, scene: string, level: number) => {
 
-    const game: PhaserGame = await Game(this, roomId, { scene, level })
+    const game: Phaser.Game = await Game(this, roomId, { scene, level })
 
     this.rooms[roomId] = {
       sceneKey: scene,

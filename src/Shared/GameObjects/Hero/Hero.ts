@@ -2,7 +2,7 @@ import { createAnimations } from './HeroAnimations'
 import EmptyCollider from '../EmptyCollider'
 import { SKINS, PROJECT_SIDE } from '../../../constants'
 
-declare type HeroOptions = { socketId: string; clientID: number, projectSide: string}
+declare type HeroOptions = { socketId: string; clientID: number, projectSide: string, id: string}
 declare type HeroState = {
   x: number,
   y: number,
@@ -11,15 +11,16 @@ declare type HeroState = {
   speed: number,
   stamina: number,
   isDeadObject: boolean
-  projectSide: string
+  currentAnimation: string
 }
 
 export default class Hero extends Phaser.GameObjects.Container {
+  public static readonly type = 'HERO'
   private static COLLIDER_SQUARE: Square = { x: 22, y: 44, w: 24, h: 10 }
   private static SIZES = {w: 64, h: 64 }
   private static MAX_HISTORY_LENGTH = 10
   private stateHistory: HeroState[] = []
-  private currentState: HeroState
+  public currentState: HeroState
   private options: HeroOptions
   public collider: EmptyCollider
   private sprite: Phaser.Physics.Arcade.Sprite
@@ -27,12 +28,13 @@ export default class Hero extends Phaser.GameObjects.Container {
   constructor(scene: Phaser.Scene, options?: HeroOptions) {
     super(scene, 400, 400)
     scene.add.existing(this)
-    //scene.physics.add.existing(this)
     if(options) this.options = options
     this.collider = new EmptyCollider(scene, Hero.COLLIDER_SQUARE)
     this.add(this.collider);
-    this.createSprite(scene, Hero.SIZES)
-    this.add(this.sprite)
+    if(this.options.projectSide === PROJECT_SIDE.CLIENT) {
+      this.createSprite(scene, Hero.SIZES)
+      this.add(this.sprite)
+    }
     this.currentState = this.getInitialState()
   }
 
@@ -40,8 +42,15 @@ export default class Hero extends Phaser.GameObjects.Container {
     createAnimations(scene)
   }
 
+  public setAnimation (animation: string = 'idle') {
+    this.currentState.currentAnimation = animation;
+    if(this.options.projectSide === PROJECT_SIDE.SERVER) return
+    if (!this.sprite.anims.isPlaying) this.sprite.play(animation)
+    else if (this.sprite.anims.isPlaying && this.sprite.anims.getCurrentKey() !== animation) this.sprite.play(animation)
+  }
+
   private createSprite(scene: Phaser.Scene, size: Size): void {
-    const sprite = new Phaser.Physics.Arcade.Sprite(scene, 0,0, '0')
+    const sprite = new Phaser.Physics.Arcade.Sprite(scene, 0,0, SKINS.DUDE.toString())
     scene.add.existing(sprite)
     scene.physics.add.existing(sprite)
     sprite.setOrigin(0)
@@ -50,16 +59,16 @@ export default class Hero extends Phaser.GameObjects.Container {
     this.sprite = sprite;
   }
 
-  private getInitialState(options:any = {}): HeroState {
+  private getInitialState(): HeroState {
     return {
-      x: options.x || 10,
-      y: options.y ||10,
-      stateID: options.stateID ||0,
-      health: options.health ||100,
-      speed: options.speed ||300,
-      stamina: options.stamina ||100,
+      x: this.x,
+      y: this.y,
+      stateID:0,
+      health: 100,
+      speed: 300,
+      stamina: 100,
       isDeadObject: false,
-      projectSide: options.projectSide || PROJECT_SIDE.CLIENT,
+      currentAnimation: 'idle',
     }
   }
 

@@ -48,7 +48,7 @@
         if (this.down) total += 25
         if (this.none) total += 8
         setTimeout(() => {
-          this.socket.emit('U' /* short for updateDude */, total)
+          this.socket.emit('updateDude' /* short for updateDude */, total)
         }, 50)
 
     }

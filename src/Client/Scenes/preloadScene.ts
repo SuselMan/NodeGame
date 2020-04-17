@@ -1,6 +1,7 @@
 import io from 'socket.io-client'
 import { SKINS } from '../../constants'
-import { createDudeAnimations } from '../components/animations'
+import { createDudeAnimations } from '../Components/animations'
+import Hero from '../../Shared/GameObjects/Hero/Hero'
 
 export default class PreloadScene extends Phaser.Scene {
   constructor() {
@@ -30,6 +31,7 @@ export default class PreloadScene extends Phaser.Scene {
 
   create() {
     createDudeAnimations(this)
+    Hero.createAnimations(this)
 
     // connecting to socket.io
     const url = `${location.origin}/G` /* short for stats */

@@ -1,7 +1,7 @@
 import express from 'express'
 import pidusage from 'pidusage'
 import path from 'path'
-import RoomManager from '../managers/roomManager'
+import RoomManager from '../Managers/roomManager'
 
 export default class Routes {
   router: express.Router

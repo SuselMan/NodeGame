@@ -1,6 +1,6 @@
-import PreloadScene from './scenes/preloadScene'
-import MenuScene from './scenes/menuScene'
-import MainScene from './scenes/mainScene'
+import PreloadScene from './Scenes/preloadScene'
+import MenuScene from './Scenes/menuScene'
+import MainScene from './Scenes/mainScene'
 
 const DEFAULT_WIDTH = document.documentElement.clientWidth
 const DEFAULT_HEIGHT = document.documentElement.clientHeight

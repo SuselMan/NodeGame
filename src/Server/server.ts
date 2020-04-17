@@ -11,9 +11,9 @@ const server = new Server(app)
 import SocketIOStatic from 'socket.io'
 const io = SocketIOStatic(server)
 
-import RoomManager from './managers/roomManager'
-import Routes from './routes/routes'
-import IoGame from './socket/ioGame'
+import RoomManager from './Managers/roomManager'
+import Routes from './Routes/routes'
+import IoGame from './Socket/ioGame'
 
 const port = process.env.PORT || 3000
 
