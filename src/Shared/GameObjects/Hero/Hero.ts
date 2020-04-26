@@ -63,7 +63,7 @@ export default class Hero extends Phaser.GameObjects.Container {
     return {
       stateID:0,
       health: 100,
-      speed: 5,
+      speed: 7,
       stamina: 100,
       isDeadObject: false,
       currentAnimation: 'idle',
@@ -104,6 +104,8 @@ export default class Hero extends Phaser.GameObjects.Container {
         this.body.setVelocity(movePoint.x * 30, movePoint.y * 30)
         this.setAnimation(this.getDestinationString(angle))
       } else {
+        // @ts-ignore find out why
+        this.body.setVelocity(0, 0)
         this.setAnimation('idle')
       }
     }
