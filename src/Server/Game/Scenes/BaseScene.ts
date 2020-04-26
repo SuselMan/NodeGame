@@ -17,4 +17,7 @@ export default class BaseScene extends Phaser.Scene {
     this.roomManager = roomManager
     this.roomId = roomId
   }
+  update() {
+    this.tick ++;
+  }
 }

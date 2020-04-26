@@ -8,12 +8,12 @@ import EmptyCollider from '@shared/GameObjects/EmptyCollider'
 export default class GameScene extends BaseScene {
   // TODO: Realize syncable object interface
   allSyncObject: Array<any> = [];
-  tickChangedObjects: Array<any> =  []
   heroGroup: Phaser.GameObjects.Group
   heroHash: any = {};
   collidersGroup: Phaser.GameObjects.Group
   roomManager: RoomManager
   roomId: string
+  heroTest: Hero;
 
   constructor() {
     super({ key: 'GameScene', plugins: ['Clock'], active: false })
@@ -23,6 +23,7 @@ export default class GameScene extends BaseScene {
     this.prepareScene()
     this.events.addListener('createDude', this.createDude.bind(this))
     this.events.addListener('updateDude' , this.updateDude.bind(this))
+    this.events.on('postupdate', () => this.postUpdate());
   }
 
   initGroups(): void {
@@ -37,25 +38,25 @@ export default class GameScene extends BaseScene {
     const colliders = Tilemap.layers[1].objects.filter((i) => i.type === 'collider')
     colliders.forEach((collider) => {
       const opts = { x: collider.x, y: collider.y, w: collider.width, h: collider.height}
-      //this.collidersGroup.add(new EmptyCollider(this,  opts))
+      this.collidersGroup.add(new EmptyCollider(this,  opts))
     })
     this.physics.add.collider(this.heroGroup, this.collidersGroup)
   }
 
   createDude(clientId: number, socketId: string) {
-    const hero: Hero = new Hero(this, {clientID: clientId, socketId, projectSide: 'SERVER', id: this.uniqID })
-    this.heroGroup.add(hero)
-    this.allSyncObject.push(hero)
-    this.tickChangedObjects.push(hero)
-    this.heroHash[clientId] = hero
-    hero.setPosition(300, 300)
+    this.heroTest = new Hero(this, {clientID: clientId, socketId, projectSide: 'SERVER', id: this.uniqID })
+    this.heroGroup.add(this.heroTest)
+    this.allSyncObject.push(this.heroTest)
+    this.heroHash[clientId] = this.heroTest
   }
 
   updateDude(params: any): void {
-    if(this.heroHash[params.clientId]) {
-      // and apply changes
-      this.tickChangedObjects.push(this.heroHash[params.clientId]);
-    }
+    console.log(params)
+    this.heroTest.setMoveTarget(params.updates)
+    // if(this.heroHash[params.clientId]) {
+    //   // and apply changes
+    //   this.tickChangedObjects.push(this.heroHash[params.clientId]);
+    // }
     // TODO: define params as a type!
     // if(this.heroHash[params.clientId]) {
     //   const b = params.updates
@@ -71,16 +72,27 @@ export default class GameScene extends BaseScene {
     // }
   }
 
-  getInitialState() {
+  getFullState() {
     // TODO: realise syncable as interface;
     const objects = this.allSyncObject.map((obj: any) => ({ tick: this.tick, ...obj.getSyncObject() }))
     return JSON.stringify({ tick: this.tick, objects })
   }
 
   update() {
-      this.tick ++;
+      super.update()
+    this.heroTest.update();
       // this.roomManager.ioNspGame
       //   .in(this.roomId)
       //   .emit('SyncGame', { SyncObject: JSON.stringify([]) })
     }
+
+  postUpdate() {
+    //console.log(this.roomManager)
+    setTimeout(() => {
+      this.roomManager.ioNspGame
+        .in(this.roomId)
+        .emit('SyncGame', this.getFullState())
+    }, Math.random()* 500)
+
+  }
 }

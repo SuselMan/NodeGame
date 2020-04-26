@@ -28,7 +28,7 @@ export default class IoGame {
         roomManager.rooms[socket.room].users[socket.id].lastUpdate = Date.now()
         roomManager.rooms[socket.room].scene.events.emit('updateDude' /* short for updateDude */, {
           clientId: socket.clientId,
-          updates
+          updates: JSON.parse(updates)
         })
       })
 
@@ -36,14 +36,8 @@ export default class IoGame {
         if (roomManager.isRemoving(socket.room)) return
         if (!roomManager.roomExists(socket.room)) return
         if (!roomManager.rooms[socket.room].scene) return
-        const payload = {
-          time: this.time,
-          // @ts-ignore
-          syncObject /* short for objects */: roomManager.rooms[socket.room].scene.getInitialState(),
-          connectCounter: roomManager.getRoomUsersArray(socket.room).length,
-          initialState: true,
-          roomId: socket.room
-        }
+        //@ts-ignore
+        const payload = roomManager.rooms[socket.room].scene.getFullState()
 
         socket.emit('SyncGame' /* short for syncGame */, payload)
       })

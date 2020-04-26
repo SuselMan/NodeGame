@@ -15,10 +15,11 @@ export default class GameScene extends Phaser.Scene {
   private statesQueue: Array<any> = []
   private tick: number = 0;
   private socket: Socket
-  private currentSelected: any
+  private currentSelected?: any
   private collidersGroup: Phaser.GameObjects.Group
   private heroGroup: Phaser.GameObjects.Group
-
+  private heroServer: Hero
+  private syncThis: any;
   constructor() {
     super({ key: 'GameScene' })
   }
@@ -30,11 +31,9 @@ export default class GameScene extends Phaser.Scene {
   }
 
   syncGame(res: any) {
-    if (res.initialState && res.SyncObject) {
-      this.tick = res.SyncObject.tick
-    }
-    if(res.SyncObject && res.SyncObject.objects) {
-      this.statesQueue.push(res.SyncObject.objects);
+    const obj = JSON.parse(res)
+    if(this.heroServer) {
+      this.syncThis = obj.objects[0]
     }
     // if (res.O) {
     //   res.O = JSON.parse(res.O)
@@ -73,10 +72,12 @@ export default class GameScene extends Phaser.Scene {
     this.game.events.on('focus', () => socket.emit('getInitialState'))
 
     const hero = new Hero(this, { clientID: socket.clientId, socketId: '0', projectSide: PROJECT_SIDE.CLIENT, id: '0'})
+    this.heroServer = new Hero(this, { clientID: socket.clientId, socketId: '0', projectSide: PROJECT_SIDE.CLIENT, id: '0'})
     this.currentSelected = hero;
     this.defineListeners();
+    this.heroServer.setBlendMode(Phaser.BlendModes.OVERLAY)
 
-    this.collidersGroup = this.physics.add.staticGroup()
+    this.collidersGroup = this.add.group()
     this.heroGroup = this.add.group()
     this.heroGroup.add(hero)
     // @ts-ignore
@@ -85,14 +86,16 @@ export default class GameScene extends Phaser.Scene {
       const opts = { x: collider.x, y: collider.y, w: collider.width, h: collider.height}
       this.collidersGroup.add(new EmptyCollider(this,  opts))
     })
-    //this.physics.add.collider(this.heroGroup, this.collidersGroup)
-    //this.collidersGroup.refresh();
+    this.physics.add.collider(this.heroGroup, this.collidersGroup)
+    this.events.on('postupdate', this.postUpdate);
   }
 
   defineListeners() {
     this.input.on('pointerdown', (e: any) => {
-      console.log('hi', e);
       if(this.currentSelected) {
+        setTimeout(() => {
+          this.socket.emit('updateDude', JSON.stringify({x: this.cameras.main.scrollX + e.downX, y: this.cameras.main.scrollY + e.downY}))
+        }, Math.random() * 500)
         this.currentSelected.setMoveTarget({x: this.cameras.main.scrollX + e.downX, y: this.cameras.main.scrollY + e.downY})
       }
     })
@@ -103,7 +106,11 @@ export default class GameScene extends Phaser.Scene {
       this.currentSelected.update();
       this.cameras.main.setScroll(this.currentSelected.x - this.cameras.main.width / 2, this.currentSelected.y - this.cameras.main.height / 2)
     }
-    this.physics.world.collide(this.heroGroup, this.collidersGroup);
+    if(this.syncThis) {
+      this.heroServer.applyState(this.syncThis);
+      this.heroServer.update()
+    }
+    // this.physics.world.collide(this.heroGroup, this.collidersGroup);
     // if (this.sync.objects.length > 0) {
     //   this.sync.objects.forEach(obj => {
     //     if (this.objects[obj.id]) {
@@ -121,5 +128,9 @@ export default class GameScene extends Phaser.Scene {
     //   })
     // }
     // this.sync.objects = []
+  }
+
+  postUpdate(time: number, delta: number) {
+    //console.log('it was called', time, delta)
   }
 }

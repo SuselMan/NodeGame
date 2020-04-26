@@ -7,8 +7,6 @@ declare type HeroState = {
   stateID: number,
   health: number,
   speed: number,
-  stamina: number,
-  isDeadObject: boolean
   currentAnimation: string
   currentTarget?: {x: number, y: number}
 }
@@ -19,7 +17,7 @@ export default class Hero extends Phaser.GameObjects.Container {
   private static SIZES = {w: 64, h: 64 }
   private static MAX_HISTORY_LENGTH = 10
   public currentState: HeroState
-  private options: HeroOptions  
+  private readonly options: HeroOptions
   public collider: EmptyCollider
   private sprite: Phaser.Physics.Arcade.Sprite
 
@@ -44,7 +42,7 @@ export default class Hero extends Phaser.GameObjects.Container {
 
   public setAnimation (animation: string = 'idle') {
     this.currentState.currentAnimation = animation;
-    //if(this.options.projectSide === PROJECT_SIDE.SERVER) return
+    if(this.options.projectSide === PROJECT_SIDE.SERVER) return
     if (!this.sprite.anims.isPlaying) this.sprite.play(animation)
     else if (this.sprite.anims.isPlaying && this.sprite.anims.getCurrentKey() !== animation) this.sprite.play(animation)
   }
@@ -64,14 +62,15 @@ export default class Hero extends Phaser.GameObjects.Container {
       stateID:0,
       health: 100,
       speed: 7,
-      stamina: 100,
-      isDeadObject: false,
       currentAnimation: 'idle',
       currentTarget: undefined
     }
   }
 
   public setMoveTarget({x, y}: {x:number, y: number}) {
+    if(this.options.projectSide === PROJECT_SIDE.SERVER) {
+      console.log(x, y);
+    }
     this.currentState.currentTarget = {x, y}
   }
 
@@ -88,6 +87,12 @@ export default class Hero extends Phaser.GameObjects.Container {
     this.setPosition(Phaser.Math.RND.integerInRange(0, 1000), Phaser.Math.RND.integerInRange(100, 300))
   }
 
+  public applyState(state: any) {
+    console.log(state);
+    this.setPosition(state.x, state.y)
+    this.setAnimation(state.currentAnimation)
+  }
+
   update() {
     if(this.currentState.currentTarget) {
       const heroVector = new Phaser.Math.Vector2(this.x, this.y)
@@ -98,7 +103,7 @@ export default class Hero extends Phaser.GameObjects.Container {
       let moveDistance = this.currentState.speed;
       if(distance > moveDistance/2) {
         const movePoint = heroVector.setToPolar(angle, moveDistance);
-        console.log(this.body)
+        // console.log(this.body)
         //this.setPosition(this.x + movePoint.x, this.y + movePoint.y);
         // @ts-ignore find out why
         this.body.setVelocity(movePoint.x * 30, movePoint.y * 30)
@@ -107,11 +112,13 @@ export default class Hero extends Phaser.GameObjects.Container {
         // @ts-ignore find out why
         this.body.setVelocity(0, 0)
         this.setAnimation('idle')
+        this.currentState.currentTarget = undefined
       }
     }
   }
 
   private getDestinationString(angle: number) {
+    // TODO: is there better way to to it? =)
     if(angle > 5.886 || angle <= 0.392) return 'right'
     if(angle > 0.392 && angle <= 1.178) return 'downright'
     if(angle > 1.178 && angle <= 1.962) return 'down'
