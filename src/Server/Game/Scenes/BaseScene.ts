@@ -5,6 +5,8 @@ export default class BaseScene extends Phaser.Scene {
   roomId: any
   uID: number = 0
   uIDDate: number = (new Date).getTime()
+  tick: number = 0
+
   get uniqID () {
     return `${this.uIDDate}${this.uID++}`
   }

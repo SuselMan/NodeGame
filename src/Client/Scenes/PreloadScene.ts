@@ -48,7 +48,7 @@ export default class PreloadScene extends Phaser.Scene {
       console.log("You're connected to socket.io")
     })
 
-    // we wait until we have a valid clientId, then start the MainScene
+    // we wait until we have a valid clientId, then start the GameScene
     socket.on('clientId', (clientId: number) => {
       socket.clientId = clientId
       console.log('Your client id', clientId)

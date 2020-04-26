@@ -1,6 +1,6 @@
 import commonConfig, { arcadePhysics } from '../Server/Game/config'
 
-import ArcadeScene from '../Server/Game/Scenes/arcadeScene'
+import ArcadeScene from '@server/Game/Scenes/GameScene'
 
 class PhaserGame extends Phaser.Game {
   debug = true

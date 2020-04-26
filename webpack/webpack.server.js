@@ -1,6 +1,7 @@
 const path = require('path')
 const nodeExternals = require('webpack-node-externals')
 const webpack = require('webpack')
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 module.exports = {
   mode: 'development',
@@ -15,7 +16,8 @@ module.exports = {
     path: path.resolve(__dirname, '../dist/server')
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js']
+    extensions: ['.ts', '.tsx', '.js'],
+    plugins: [ new TsconfigPathsPlugin({configFile: path.resolve(__dirname, '../tsconfig.json')})]
   },
   module: {
     rules: [

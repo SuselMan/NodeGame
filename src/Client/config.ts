@@ -1,6 +1,6 @@
-import PreloadScene from './Scenes/preloadScene'
-import MenuScene from './Scenes/menuScene'
-import MainScene from './Scenes/mainScene'
+import PreloadScene from './Scenes/PreloadScene'
+import MenuScene from './Scenes/MenuScene'
+import GameScene from './Scenes/GameScene'
 
 const DEFAULT_WIDTH = document.documentElement.clientWidth
 const DEFAULT_HEIGHT = document.documentElement.clientHeight
@@ -15,17 +15,17 @@ export const world = {
 
 const config = {
   type: Phaser.WEBGL,
-  backgroundColor: '#556539',
+  backgroundColor: '#6D6A28',
   width: DEFAULT_WIDTH, // initial width that determines the scaled size
   height: DEFAULT_HEIGHT,
-  scene: [PreloadScene, MenuScene, MainScene],
+  scene: [PreloadScene, MenuScene, GameScene],
   physics: {
     default: 'arcade',
     arcade: {
       gravity: {
         y: 0
       },
-      debug: true,
+      debug: false,
       debugBodyColor: 0xff00ff
     }
   }

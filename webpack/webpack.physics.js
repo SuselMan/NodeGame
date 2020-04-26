@@ -1,10 +1,11 @@
 const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 module.exports = {
   mode: 'development',
-  entry: ['./src/physics/index.ts'],
+  entry: ['./src/Physics/index.ts'],
   output: {
     publicPath: 'static/physics',
     path: path.resolve(__dirname, '../dist/physics'),
@@ -12,7 +13,8 @@ module.exports = {
     chunkFilename: '[name].chunk.js'
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js']
+    extensions: ['.ts', '.tsx', '.js'],
+    plugins: [ new TsconfigPathsPlugin({configFile: path.resolve(__dirname, '../tsconfig.json')})]
   },
   module: {
     rules: [

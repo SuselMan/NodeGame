@@ -142,7 +142,7 @@ export default class RoomManager {
       users: {},
       game,
       // @ts-ignore
-      scene: game.scene.keys.MainScene,
+      scene: game.scene.keys.GameScene,
       removing: false
     }
   }

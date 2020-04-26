@@ -39,14 +39,13 @@ export default class IoGame {
         const payload = {
           time: this.time,
           // @ts-ignore
-          O /* short for objects */: roomManager.rooms[socket.room].scene.getInitialState(),
+          syncObject /* short for objects */: roomManager.rooms[socket.room].scene.getInitialState(),
           connectCounter: roomManager.getRoomUsersArray(socket.room).length,
           initialState: true,
           roomId: socket.room
         }
 
-        socket.emit('S' /* short for syncGame */, payload)
-        // ioNspGame.in(socket.room).emit('S' /* short for syncGame */, payload)
+        socket.emit('SyncGame' /* short for syncGame */, payload)
       })
     })
   }

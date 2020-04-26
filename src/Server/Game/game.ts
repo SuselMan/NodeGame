@@ -1,7 +1,7 @@
 import '@geckos.io/phaser-on-nodejs'
 import commonConfig, { arcadePhysics } from './config'
 
-import ArcadeScene from './Scenes/arcadeScene'
+import ArcadeScene from './Scenes/GameScene'
 import RoomManager from '../Managers/roomManager'
 
 const Game = (roomManager: RoomManager, roomId: string, options: { scene: string; level: number }) => {

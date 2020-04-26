@@ -27,7 +27,7 @@ export default class MenuScene extends Phaser.Scene {
         .setOrigin(0.5, 0)
         .setInteractive()
         .on('pointerdown', () => {
-          this.scene.start('MainScene', { scene: 'ArcadeScene', level: 0, socket: this.socket })
+          this.scene.start('GameScene', { scene: 'ArcadeScene', level: 0, socket: this.socket })
         })
     )
   }
