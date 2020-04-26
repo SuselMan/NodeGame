@@ -11,6 +11,12 @@
     "esModuleInterop": true,
     "moduleResolution": "node",
     "strictPropertyInitialization": false,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@client/*": ["Client/*"],
+      "@server/*": ["Server/*"],
+      "@shared/*": ["Shared/*"]
+    }
   }
 }
