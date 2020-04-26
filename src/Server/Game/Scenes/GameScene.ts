@@ -37,7 +37,7 @@ export default class GameScene extends BaseScene {
     const colliders = Tilemap.layers[1].objects.filter((i) => i.type === 'collider')
     colliders.forEach((collider) => {
       const opts = { x: collider.x, y: collider.y, w: collider.width, h: collider.height}
-      this.collidersGroup.add(new EmptyCollider(this,  opts))
+      //this.collidersGroup.add(new EmptyCollider(this,  opts))
     })
     this.physics.add.collider(this.heroGroup, this.collidersGroup)
   }

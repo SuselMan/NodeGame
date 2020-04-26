@@ -27,13 +27,15 @@ export default class Hero extends Phaser.GameObjects.Container {
     super(scene, 400, 400)
     scene.add.existing(this)
     if(options) this.options = options
-    this.collider = new EmptyCollider(scene, Hero.COLLIDER_SQUARE)
-    this.add(this.collider);
     if(this.options.projectSide === PROJECT_SIDE.CLIENT) {
       this.createSprite(scene, Hero.SIZES)
       this.add(this.sprite)
     }
     this.currentState = this.getInitialState()
+
+    scene.physics.add.existing(this)
+    // @ts-ignore find out why
+    this.body.setSize(Hero.COLLIDER_SQUARE.w, Hero.COLLIDER_SQUARE.h)
   }
 
   public static createAnimations(scene: Phaser.Scene): void {
@@ -48,12 +50,12 @@ export default class Hero extends Phaser.GameObjects.Container {
   }
 
   private createSprite(scene: Phaser.Scene, size: Size): void {
-    const sprite = new Phaser.Physics.Arcade.Sprite(scene, 0,0, SKINS.DUDE.toString())
+    const sprite = new Phaser.Physics.Arcade.Sprite(scene, -Hero.COLLIDER_SQUARE.x,-Hero.COLLIDER_SQUARE.y, SKINS.DUDE.toString())
     scene.add.existing(sprite)
-    scene.physics.add.existing(sprite)
+    //scene.physics.add.existing(sprite)
     sprite.setOrigin(0)
     sprite.setFrame(0)
-    sprite.setSize(size.w, size.h)
+    //sprite.setSize(size.w, size.h)
     this.sprite = sprite;
   }
 
@@ -96,8 +98,10 @@ export default class Hero extends Phaser.GameObjects.Container {
       let moveDistance = this.currentState.speed;
       if(distance > moveDistance/2) {
         const movePoint = heroVector.setToPolar(angle, moveDistance);
-        console.log(angle)
-        this.setPosition(this.x + movePoint.x, this.y + movePoint.y);
+        console.log(this.body)
+        //this.setPosition(this.x + movePoint.x, this.y + movePoint.y);
+        // @ts-ignore find out why
+        this.body.setVelocity(movePoint.x * 30, movePoint.y * 30)
         this.setAnimation(this.getDestinationString(angle))
       } else {
         this.setAnimation('idle')

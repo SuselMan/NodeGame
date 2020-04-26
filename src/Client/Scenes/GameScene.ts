@@ -3,6 +3,9 @@ import { world } from '../config'
 import { SKINS, PROJECT_SIDE } from '../../constants'
 import Hero from '../../Shared/GameObjects/Hero/Hero'
 
+import Tilemap from '@client/Assets/tilemap.json'
+import EmptyCollider from '@shared/GameObjects/EmptyCollider'
+
 interface Objects {
   [key: string]: any
 }
@@ -13,6 +16,8 @@ export default class GameScene extends Phaser.Scene {
   private tick: number = 0;
   private socket: Socket
   private currentSelected: any
+  private collidersGroup: Phaser.GameObjects.Group
+  private heroGroup: Phaser.GameObjects.Group
 
   constructor() {
     super({ key: 'GameScene' })
@@ -70,13 +75,25 @@ export default class GameScene extends Phaser.Scene {
     const hero = new Hero(this, { clientID: socket.clientId, socketId: '0', projectSide: PROJECT_SIDE.CLIENT, id: '0'})
     this.currentSelected = hero;
     this.defineListeners();
+
+    this.collidersGroup = this.physics.add.staticGroup()
+    this.heroGroup = this.add.group()
+    this.heroGroup.add(hero)
+    // @ts-ignore
+    const colliders = Tilemap.layers[1].objects.filter((i) => i.type === 'collider')
+    colliders.forEach((collider) => {
+      const opts = { x: collider.x, y: collider.y, w: collider.width, h: collider.height}
+      this.collidersGroup.add(new EmptyCollider(this,  opts))
+    })
+    //this.physics.add.collider(this.heroGroup, this.collidersGroup)
+    //this.collidersGroup.refresh();
   }
 
   defineListeners() {
     this.input.on('pointerdown', (e: any) => {
       console.log('hi', e);
       if(this.currentSelected) {
-        this.currentSelected.setMoveTarget({x:e.downX, y: e.downY})
+        this.currentSelected.setMoveTarget({x: this.cameras.main.scrollX + e.downX, y: this.cameras.main.scrollY + e.downY})
       }
     })
   }
@@ -84,7 +101,9 @@ export default class GameScene extends Phaser.Scene {
   update(time: number, delta: number) {
     if(this.currentSelected) {
       this.currentSelected.update();
+      this.cameras.main.setScroll(this.currentSelected.x - this.cameras.main.width / 2, this.currentSelected.y - this.cameras.main.height / 2)
     }
+    this.physics.world.collide(this.heroGroup, this.collidersGroup);
     // if (this.sync.objects.length > 0) {
     //   this.sync.objects.forEach(obj => {
     //     if (this.objects[obj.id]) {
